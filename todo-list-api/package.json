@@ -1,0 +1,23 @@
+{
+  "name": "todo-list-api",
+  "version": "0.1.0",
+  "description": "api for front todo-list",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/99percent6/todo-list.git"
+  },
+  "author": "Zeynalov Vladimir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/99percent6/todo-list/issues"
+  },
+  "homepage": "https://github.com/99percent6/todo-list#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
