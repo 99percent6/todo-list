@@ -1,28 +1,63 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { withStyles } from '@material-ui/core/styles';
+import SwipeableViews from 'react-swipeable-views';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Todo from './components/Todo/TodoList';
+import TabContainer from './components/Tabs/TabContainer';
 
-class App extends Component {
+const styles = theme => ({
+  root: {
+    margin: '50px auto',
+    backgroundColor: theme.palette.background.paper,
+    width: 700,
+  },
+});
+
+class TodoTabs extends Component {
+  state = {
+    value: 0,
+  };
+
+  handleChange = (event, value) => {
+    this.setState({ value });
+  };
+
+  handleChangeIndex = index => {
+    this.setState({ value: index });
+  };
+
   render() {
+    const { classes, theme } = this.props;
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
+      <div className={classes.root}>
+        <AppBar position="static" color="default">
+          <Tabs
+            value={this.state.value}
+            onChange={this.handleChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
           >
-            Learn React
-          </a>
-        </header>
+            <Tab label="Задачи" />
+            <Tab label="Заметки" />
+          </Tabs>
+        </AppBar>
+        <SwipeableViews
+          axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+          index={this.state.value}
+          onChangeIndex={this.handleChangeIndex}
+        >
+          <TabContainer dir={theme.direction}>
+            <Todo />
+          </TabContainer>
+          <TabContainer dir={theme.direction}>В разработке...</TabContainer>
+        </SwipeableViews>
       </div>
     );
   }
 }
 
-export default App;
+export default withStyles(styles, { withTheme: true })(TodoTabs);
