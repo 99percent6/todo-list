@@ -14,8 +14,14 @@ const styles = theme => ({
     width: '80%',
     wordBreak: 'break-all',
   },
-  itemContent: {
+  itemContentActive: {
     cursor: 'pointer',
+    color: 'black',
+  },
+  itemContentDisabled: {
+    cursor: 'pointer',
+    color: 'gray',
+    textDecoration: 'line-through',
   },
   avatarBackground: {
     backgroundColor: 'white',
@@ -36,7 +42,9 @@ class Item extends Component {
           </Avatar>
         </ListItemAvatar>
         <ListItemText
-          className={classes.itemContent}
+          classes={{
+            primary: isActiveState ? classes.itemContentActive : classes.itemContentDisabled,
+          }}
           primary={task.text}
           onClick={() => onChangeState(task)}
         />
