@@ -2,6 +2,9 @@
   "db": {
     "apiKey": "",
     "projectId": "",
-    "databaseURL": ""
+    "databaseURL": "",
+    "collectionName": {
+      "tasks": ""
+    }
   }
 }
