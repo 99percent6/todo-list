@@ -1,7 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, } from "react-router-dom";
 import './index.css';
-import App from './App';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Todo from './pages/Todo';
 import * as serviceWorker from './serviceWorker';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -16,9 +20,14 @@ const store = createStore(
 );
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <Router>
+    <Provider store={store}>
+      <Route path="/" exact component={Home}/>
+      <Route path="/login" component={Login}/>
+      <Route path="/registration" component={Register}/>
+      <Route path="/todo" component={Todo}/>
+    </Provider>
+  </Router>,
   document.getElementById('root')
 );
 

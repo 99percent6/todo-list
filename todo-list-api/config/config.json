@@ -1,10 +1,16 @@
 {
+  "bodyLimit": "5000kb",
   "db": {
     "apiKey": "",
     "projectId": "",
     "databaseURL": "",
     "collectionName": {
       "tasks": ""
-    }
+    },
+    "secretKey": ""
+  },
+  "redis": {
+    "host": "",
+    "port": ""
   }
 }

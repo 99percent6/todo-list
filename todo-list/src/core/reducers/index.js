@@ -48,8 +48,30 @@ const UIState = handleActions({
   },
 }, { activeTaskTable: 'active' });
 
+const user = handleActions({
+  [actions.updUserLogin](state, { payload: { login } }) {
+    return {
+      ...state,
+      login,
+    };
+  },
+  [actions.updUserPassword](state, { payload: { password } }) {
+    return {
+      ...state,
+      password,
+    };
+  },
+  [actions.updUserToken](state, { payload: { token } }) {
+    return {
+      ...state,
+      token,
+    }
+  },
+}, { login: '', password: '', token: '' });
+
 export default combineReducers({
   text,
   tasks,
   UIState,
+  user,
 });

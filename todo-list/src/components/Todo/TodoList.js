@@ -11,7 +11,7 @@ import { db } from '../../core/db';
 import List from './List';
 import ListStateTabs from './ListStateTabs';
 import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../../core/selectors';
-import '../../css/Todo/base.css';
+import '../../css/components/todoList/base.css';
 
 const mapStateToProps = (state) => {
   const { text, UIState } = state;

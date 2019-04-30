@@ -4,8 +4,8 @@ import SwipeableViews from 'react-swipeable-views';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Todo from './components/Todo/TodoList';
-import TabContainer from './components/Tabs/TabContainer';
+import Todo from '../components/Todo/TodoList';
+import TabContainer from '../components/Tabs/TabContainer';
 
 const styles = theme => ({
   root: {
