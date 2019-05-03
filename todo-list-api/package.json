@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
-    "start:inspect": "nodemon --inspect=9229 -w src --exec \"babel-node src --presets es2015,stage-0\""
+    "dev": "nodemon -w src --exec \"babel-node src --presets es2015,stage-0\"",
+    "dev:inspect": "nodemon --inspect=9229 -w src --exec \"babel-node src --presets es2015,stage-0\""
   },
   "repository": {
     "type": "git",

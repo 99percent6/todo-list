@@ -20,7 +20,7 @@ export default ({ config, db }) => {
       if (result.code === 200) {
         return res.send({result: result.result, code: result.code}).status(result.code);
       } else {
-        return res.send({result: result.message, code: result.code}).status(result.code);
+        return res.send(result).status(result.code);
       }
     } catch (error) {
       console.error(error);
@@ -41,14 +41,15 @@ export default ({ config, db }) => {
         if (userPassword === password) {
           const token = tokgen.generate();
           if (redisClient.isConnected()) {
-            redisClient.set(token, user);
+            const expire = 60 * 60 * 24 * 30;
+            redisClient.set(token, user, expire);
           }
           return res.send({ result: token, code: result.code }).status(result.code);
         } else {
           return res.send({result: 'Forbidden.Wrong password', code: 403}).status(403);
         }
       } else {
-        return res.send({result: result.message, code: result.code}).status(result.code);
+        return res.send(result).status(result.code);
       }
     } catch (error) {
       console.error(error);
@@ -69,7 +70,7 @@ export default ({ config, db }) => {
           if (result.result.password) delete result.result.password;
           return res.send({result: result.result, code: result.code}).status(result.code);
         } else {
-          return res.send({result: result.message, code: result.code}).status(result.code);
+          return res.send(result).status(result.code);
         }
       } else {
         return res.send({ result: 'User not authorized', code: 401 });

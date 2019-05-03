@@ -8,14 +8,16 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import * as actions from '../core/actions';
+import { setCookie } from '../core/lib/cookies';
 import '../css/pages/login/base.css';
 
 const mapStateToProps = (state) => {
-  const { login, password, token } = state.user;
+  const { login, password, token, current } = state.user;
   const props = {
     login,
     password,
     token,
+    currentUser: current,
   };
   return props;
 };
@@ -24,6 +26,7 @@ const actionCreators = {
   updUserLogin: actions.updUserLogin,
   updUserPassword: actions.updUserPassword,
   authUser: actions.authUser,
+  getUser: actions.getUser,
 };
 
 const styles = theme => ({
@@ -53,14 +56,28 @@ class Login extends Component {
     actionMap[prop]({ [prop]: event.target.value });
   };
 
-  auth = () => {
+  auth = async () => {
     const { authUser, login, password } = this.props;
-    authUser({ login, password });
+    const token = await authUser({ login, password });
+    if (token) {
+      this.getUser();
+    }
   };
+
+  getUser = () => {
+    const { token, getUser } = this.props;
+    getUser({ token }).then(user => {
+      const expire = 1000 * 60 * 60 * 24 * 30;
+      delete user.name;
+      const encodeUser = btoa(JSON.stringify(user));
+      setCookie('token', token, { expires: new Date(Date.now() + expire) });
+      setCookie('user', encodeUser, { expires: new Date(Date.now() + expire) });
+    });
+  }
 
   render () {
     const { classes, login, password } = this.props;
-    console.log('--------------------', this.props);
+
     return (
       <div id="login">
         <AuthContainer>
