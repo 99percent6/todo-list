@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, } from "react-router-dom";
 import { connect } from 'react-redux';
+import Cryptr from 'cryptr';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Todo from './pages/Todo';
 import { getCookie } from './core/lib/cookies';
 import * as actions from './core/actions';
+import config from './config/config.json';
 
 const mapStateToProps = (state) => {
   const { current, token } = state.user;
@@ -27,10 +29,11 @@ class App extends Component {
     super(props);
     const { updUserToken, updUserCurrent } = props;
     const token = getCookie('token');
+    const cryptr = new Cryptr(config.secretKey);
     let user = getCookie('user');
     if (user && token) {
       try {
-        user = JSON.parse(atob(user));
+        user = JSON.parse(cryptr.decrypt(user));
       } catch (error) {
         console.error(error);
       }

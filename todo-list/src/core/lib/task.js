@@ -19,7 +19,7 @@ export const queryHandler = async function ({ url, method, body }) {
   }
   
   const token = getCookie('token');
-  if (token) {
+  if (token && !url.includes('token')) {
     url += `?token=${token}`;
   }
 

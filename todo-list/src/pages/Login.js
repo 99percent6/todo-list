@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import Cryptr from 'cryptr';
 import AuthContainer from '../components/pages/AuthContainer';
 import { withStyles } from '@material-ui/core/styles';
 import FormControl from '@material-ui/core/FormControl';
@@ -9,6 +10,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import * as actions from '../core/actions';
 import { setCookie } from '../core/lib/cookies';
+import config from '../config/config.json';
 import '../css/pages/login/base.css';
 
 const mapStateToProps = (state) => {
@@ -68,8 +70,8 @@ class Login extends Component {
     const { token, getUser } = this.props;
     getUser({ token }).then(user => {
       const expire = 1000 * 60 * 60 * 24 * 30;
-      delete user.name;
-      const encodeUser = btoa(JSON.stringify(user));
+      const cryptr = new Cryptr(config.secretKey);
+      const encodeUser = cryptr.encrypt(JSON.stringify(user));
       setCookie('token', token, { expires: new Date(Date.now() + expire) });
       setCookie('user', encodeUser, { expires: new Date(Date.now() + expire) });
     });

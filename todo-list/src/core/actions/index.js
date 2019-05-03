@@ -97,7 +97,7 @@ export const getUser = ({ token }) => async (dispatch) => {
     throw new Error('Token is required field');
   }
   try {
-    const url = `${config.api.host}/user/getUser`;
+    const url = `${config.api.host}/user/getUser?token=${token}`;
     const result = await queryHandler({ url, method: 'GET' });
     if (result && result.code === 200) {
       dispatch(updUserCurrent({ user: result.result }));
