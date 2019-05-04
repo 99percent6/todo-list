@@ -44,11 +44,50 @@ export default class db {
     Object.assign(user, { password: encriptedPassword });
     try {
       const dbUser = await this.findByField({ field: 'login', value: user.login, collection: this.usersCollectionName });
-      if (dbUser && dbUser.code === 404) {
+      const dbEmail = await this.findByField({ field: 'email', value: user.email, collection: this.usersCollectionName });
+      if (dbUser && dbUser.code === 200) {
+        return { code: 500, result: 'Login busy' };
+      } else if (dbEmail && dbEmail.code === 200) {
+        return { code: 500, result: 'Email busy' };
+      } else {
         const result = await this.db.collection(this.usersCollectionName).add(user);
         return { code: 200, result: result.id };
+      }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async checkUserLogin (login) {
+    if (!user.login) {
+      console.error('User login is missing');
+      return { code: 404, result: 'Missing user login' };
+    }
+    try {
+      const dbUser = await this.findByField({ field: 'login', value: login, collection: this.usersCollectionName });
+      if (dbUser && dbUser.code === 404) {
+        return { code: 200, result: 'OK' };
       } else {
         return { code: 500, result: 'Login busy' };
+      }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async checkUserEmail (email) {
+    if (!user.email) {
+      console.error('Email login is missing');
+      return { code: 404, result: 'Missing user email' };
+    }
+    try {
+      const dbUser = await this.findByField({ field: 'email', value: email, collection: this.usersCollectionName });
+      if (dbUser && dbUser.code === 404) {
+        return { code: 200, result: 'OK' };
+      } else {
+        return { code: 500, result: 'Email busy' };
       }
     } catch (error) {
       console.error(error);

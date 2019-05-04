@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Todo from './pages/Todo';
+import Notification from './components/notifications/notificationContainer';
 import { getCookie } from './core/lib/cookies';
 import * as actions from './core/actions';
 import config from './config/config.json';
@@ -49,6 +50,7 @@ class App extends Component {
         <Route path="/login" component={Login}/>
         <Route path="/registration" component={Register}/>
         <Route path="/todo" component={Todo}/>
+        <Notification/>
       </Router>
     );
   }

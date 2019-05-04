@@ -33,21 +33,21 @@ const UIState = handleActions({
     activeTaskTable = value;
     return { activeTaskTable };
   },
-}, { activeTaskTable: 'active' });
+  [actions.setAuthUserState](state, { payload: { authState } }) {
+    return {
+      ...state,
+      authUserState: authState,
+    };
+  },
+  [actions.setRegistrationUserState](state, { payload: { registrationState } }) {
+    return {
+      ...state,
+      registrationUserState: registrationState,
+    };
+  },
+}, { activeTaskTable: 'active', authUserState: 'none', registrationUserState: 'none' });
 
 const user = handleActions({
-  [actions.updUserLogin](state, { payload: { login } }) {
-    return {
-      ...state,
-      login,
-    };
-  },
-  [actions.updUserPassword](state, { payload: { password } }) {
-    return {
-      ...state,
-      password,
-    };
-  },
   [actions.updUserToken](state, { payload: { token } }) {
     return {
       ...state,
@@ -62,9 +62,77 @@ const user = handleActions({
   },
 }, { login: '', password: '', token: '', current: null });
 
+const userAuth = handleActions({
+  [actions.updUserLogin](state, { payload: { login } }) {
+    return {
+      ...state,
+      login,
+    };
+  },
+  [actions.updUserPassword](state, { payload: { password } }) {
+    return {
+      ...state,
+      password,
+    };
+  },
+}, { login: '', password: '' });
+
+const userRegistration = handleActions({
+  [actions.updRegistrationUserLogin](state, { payload: { login } }) {
+    return {
+      ...state,
+      login,
+    };
+  },
+  [actions.updRegistrationUserPassword](state, { payload: { password } }) {
+    return {
+      ...state,
+      password,
+    };
+  },
+  [actions.updRegistrationUserRepeatedPassword](state, { payload: { repeatedPassword } }) {
+    return {
+      ...state,
+      repeatedPassword,
+    };
+  },
+  [actions.updRegistrationUserName](state, { payload: { name } }) {
+    return {
+      ...state,
+      name,
+    };
+  },
+  [actions.updRegistrationUserEmail](state, { payload: { email } }) {
+    return {
+      ...state,
+      email,
+    };
+  },
+}, { login: '', password: '', repeatedPassword: '', name: '', email: '' });
+
+const notifications = handleActions({
+  [actions.setNotificationState](state, { payload: { notifState } }) {
+    return {
+      ...state,
+      open: notifState,
+    };
+  },
+  [actions.setNotification](state, { payload: { open, message, type } }) {
+    return {
+      ...state,
+      open,
+      message,
+      type,
+    }
+  },
+}, { open: false, message: '', type: '' });
+
 export default combineReducers({
   text,
   tasks,
   UIState,
   user,
+  userAuth,
+  userRegistration,
+  notifications,
 });

@@ -11,15 +11,19 @@ import Button from '@material-ui/core/Button';
 import * as actions from '../core/actions';
 import { setCookie } from '../core/lib/cookies';
 import config from '../config/config.json';
+import Loader from '../components/loader'; 
 import '../css/pages/login/base.css';
 
 const mapStateToProps = (state) => {
-  const { login, password, token, current } = state.user;
+  const { token, current } = state.user;
+  const { authUserState } = state.UIState;
+  const { login, password } = state.userAuth;
   const props = {
     login,
     password,
     token,
     currentUser: current,
+    authUserState,
   };
   return props;
 };
@@ -29,6 +33,7 @@ const actionCreators = {
   updUserPassword: actions.updUserPassword,
   authUser: actions.authUser,
   getUser: actions.getUser,
+  setNotification: actions.setNotification,
 };
 
 const styles = theme => ({
@@ -45,6 +50,7 @@ const styles = theme => ({
   },
   button: {
     margin: theme.spacing.unit,
+    minWidth: '80px',
   },
 });
 
@@ -59,23 +65,48 @@ class Login extends Component {
   };
 
   auth = async () => {
-    const { authUser, login, password } = this.props;
+    const { authUser, login, password, setNotification } = this.props;
     const token = await authUser({ login, password });
     if (token) {
       this.getUser();
+    } else {
+      const { authUserState } = this.props;
+      if (authUserState === 'fail') {
+        setNotification({ open: true, message: 'Неверный логин или пароль.', type: 'error' });
+      }
     }
   };
 
   getUser = () => {
-    const { token, getUser } = this.props;
+    const { token, getUser, history } = this.props;
     getUser({ token }).then(user => {
-      const expire = 1000 * 60 * 60 * 24 * 30;
-      const cryptr = new Cryptr(config.secretKey);
-      const encodeUser = cryptr.encrypt(JSON.stringify(user));
-      setCookie('token', token, { expires: new Date(Date.now() + expire) });
-      setCookie('user', encodeUser, { expires: new Date(Date.now() + expire) });
+      if (user) {
+        const expire = 1000 * 60 * 60 * 24 * 30;
+        const cryptr = new Cryptr(config.secretKey);
+        const encodeUser = cryptr.encrypt(JSON.stringify(user));
+        setCookie('token', token, { expires: new Date(Date.now() + expire) });
+        setCookie('user', encodeUser, { expires: new Date(Date.now() + expire) });
+        history.replace('/todo');
+      }
     });
-  }
+  };
+
+  renderBtn = () => {
+    const { authUserState, classes } = this.props;
+    if (authUserState === 'request') {
+      return (
+        <Button variant="outlined" color="primary" className={classes.button}>
+          <Loader/>
+        </Button>
+      );
+    } else {
+      return (
+        <Button variant="outlined" color="primary" onClick={() => this.auth()} className={classes.button}>
+          Войти
+        </Button>
+      );
+    }
+  };
 
   render () {
     const { classes, login, password } = this.props;
@@ -85,7 +116,7 @@ class Login extends Component {
         <AuthContainer>
           <div className={classes.root}>
             <FormControl className={classNames(classes.margin, classes.textField)}>
-              <InputLabel htmlFor="adornment-login">Login</InputLabel>
+              <InputLabel htmlFor="adornment-login">Логин</InputLabel>
               <Input
                 id="adornment-login"
                 type='text'
@@ -94,7 +125,7 @@ class Login extends Component {
               />
             </FormControl>
             <FormControl className={classNames(classes.margin, classes.textField)}>
-              <InputLabel htmlFor="adornment-password">Password</InputLabel>
+              <InputLabel htmlFor="adornment-password">Пароль</InputLabel>
               <Input
                 id="adornment-password"
                 type='password'
@@ -102,9 +133,7 @@ class Login extends Component {
                 onChange={this.handleChange('password')}
               />
             </FormControl>
-            <Button variant="outlined" color="primary" onClick={() => this.auth()} className={classes.button}>
-              Войти
-            </Button>
+            { this.renderBtn() }
           </div>
         </AuthContainer>
       </div>

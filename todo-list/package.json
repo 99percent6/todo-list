@@ -20,7 +20,8 @@
     "redux-actions": "^2.6.5",
     "redux-form": "^8.2.0",
     "redux-thunk": "^2.3.0",
-    "reselect": "^4.0.0"
+    "reselect": "^4.0.0",
+    "validator": "^10.11.0"
   },
   "scripts": {
     "start": "react-scripts start",

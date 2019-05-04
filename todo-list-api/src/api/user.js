@@ -10,15 +10,17 @@ export default ({ config, db }) => {
   const api = Router();
   const database = new Database({ config, db });
 
-  api.post('/register', async function(req, res) {
+  api.post('/registration', async function(req, res) {
     let user = req.body;
-    if (!user.login || !user.password) {
+    const { login, password, repeatedPassword, name, email } = user;
+    if (!login || !password || !repeatedPassword || !name || !email) {
       return res.send({result: 'Missing required field', code: 500}).status(500);
     }
     try {
+      delete user.repeatedPassword;
       const result = await database.registerUser(user);
       if (result.code === 200) {
-        return res.send({result: result.result, code: result.code}).status(result.code);
+        return res.send(result).status(result.code);
       } else {
         return res.send(result).status(result.code);
       }

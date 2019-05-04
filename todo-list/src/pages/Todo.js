@@ -6,6 +6,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Todo from '../components/Todo/TodoList';
 import TabContainer from '../components/Tabs/TabContainer';
+import { getCookie } from '../core/lib/cookies';
 
 const styles = theme => ({
   root: {
@@ -16,6 +17,16 @@ const styles = theme => ({
 });
 
 class TodoTabs extends Component {
+  constructor(props) {
+    super(props);
+    const { history } = props;
+    const token = getCookie('token');
+    let user = getCookie('user');
+    if (!token || !user) {
+      history.replace('/');
+    }
+  }
+
   state = {
     value: 0,
   };
