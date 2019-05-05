@@ -26,7 +26,7 @@ export default ({ config, db }) => {
       }
     } catch (error) {
       console.error(error);
-      res.send('Internal error').status(500);
+      res.send({ result: 'Internal error', code: 500 }).status(500);
     }
   });
 
@@ -55,7 +55,21 @@ export default ({ config, db }) => {
       }
     } catch (error) {
       console.error(error);
-      return res.send('Internal error').status(500);
+      return res.send({ result: 'Internal error', code: 500 }).status(500);
+    }
+  });
+
+  api.post('/logout', async function(req, res) {
+    const token = req.query.token;
+    if (!token) {
+      return res.send({result: 'Missing required field', code: 500}).status(500);
+    }
+    if (redisClient.isConnected()) {
+      redisClient.removeBy(token);
+      return res.send({ result: 'OK', code: 200 }).status(200);
+    } else {
+      console.error('Redis not connect');
+      return res.send({ result: 'Internal error', code: 500 }).status(500);
     }
   });
 
@@ -79,7 +93,7 @@ export default ({ config, db }) => {
       }
     } catch (error) {
       console.error(error);
-      res.send('Internal error').status(500);
+      res.send({ result: 'Internal error', code: 500 }).status(500);
     }
   });
 

@@ -60,7 +60,7 @@ const user = handleActions({
       current: user,
     }
   },
-}, { login: '', password: '', token: '', current: null });
+}, { token: '', current: null });
 
 const userAuth = handleActions({
   [actions.updUserLogin](state, { payload: { login } }) {

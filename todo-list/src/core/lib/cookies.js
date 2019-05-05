@@ -8,7 +8,7 @@ export const setCookie = (name, value, options) => {
     }
     document.cookie = `${name}=${value}; ${stringOptions}`;
   }
-}
+};
 
 export const getCookie = (name) => {
   if (document && document !== undefined && name) {
@@ -23,5 +23,13 @@ export const getCookie = (name) => {
       }
     }
     return result;
+  }
+};
+
+export const deleteCookie = (name) => {
+  if (document && document !== undefined && name) {
+    const expireTime = new Date();
+    expireTime.setTime(expireTime.getTime() - 1);
+    document.cookie = name += '=; expires=' + expireTime.toGMTString();
   }
 }

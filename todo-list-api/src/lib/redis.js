@@ -45,7 +45,7 @@ class RedisWrapper {
   }
 
   removeBy (key) {
-    this.instance.del(key)
+    this.instance.del(key);
   }
 }
 

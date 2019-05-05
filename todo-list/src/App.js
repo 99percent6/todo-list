@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Todo from './pages/Todo';
+import Header from './components/Header/header';
 import Notification from './components/notifications/notificationContainer';
 import { getCookie } from './core/lib/cookies';
 import * as actions from './core/actions';
@@ -46,6 +47,7 @@ class App extends Component {
   render() {
     return (
       <Router>
+        <Route path="*" component={Header}/>
         <Route path="/" exact component={Home}/>
         <Route path="/login" component={Login}/>
         <Route path="/registration" component={Register}/>

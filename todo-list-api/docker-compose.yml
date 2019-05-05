@@ -58,8 +58,3 @@ volumes:
     driver: local
   esdat2:
     driver: local
-
-networks:
-  esnet:
-
-

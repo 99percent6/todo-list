@@ -1,6 +1,7 @@
 import { createAction } from 'redux-actions';
 import config from '../../config/config.json';
 import { queryHandler } from '../lib/task';
+import { deleteCookie } from '../lib/cookies';
 
 export const updUserLogin = createAction('UPD_USER_LOGIN');
 export const updUserPassword = createAction('UPD_USER_PASSWORD');
@@ -123,6 +124,26 @@ export const authUser = ({ login, password }) => async (dispatch) => {
   } catch (error) {
     dispatch(setAuthUserState({ authState: 'fail' }));
     console.error('Error during auth user - ', error);
+  }
+};
+
+export const logout = ({ token }) => async (dispatch) => {
+  if (!token) {
+    throw new Error('Token is required field');
+  }
+  try {
+    const url = `${config.api.host}/user/logout`;
+    const result = await queryHandler({ url, method: 'POST' });
+    if (result && result.code === 200) {
+      deleteCookie('token');
+      deleteCookie('user');
+      dispatch(updUserToken({ token: '' }));
+      dispatch(updUserCurrent({ user: null }));
+      dispatch(replaceTasks({ tasks: {} }));
+    }
+    return result;
+  } catch (error) {
+    console.error(error);
   }
 };
 
