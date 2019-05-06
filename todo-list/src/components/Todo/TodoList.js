@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { uniqueId } from 'lodash';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
-import BootstrapInput from './BootstrapInput';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
 import * as actions from '../../core/actions';
 import List from './List';
 import ListStateTabs from './ListStateTabs';
@@ -36,11 +36,27 @@ const actionCreators = {
   syncTasks: actions.syncTasks,
 };
 
+const styles = theme => ({
+  textField: {
+    marginTop: 0,
+    marginBottom: 0,
+    marginLeft: theme.spacing.unit,
+    marginRight: '20px',
+  },
+});
+
 class App extends Component {
   componentDidMount () {
     const { syncTasks, token } = this.props;
     if (token) {
       syncTasks({ token });
+    }
+  }
+
+  handleKeyPress = (e) => {
+    const event = e;
+    if (event.key === 'Enter') {
+      this.addTask(event);
     }
   }
 
@@ -89,7 +105,7 @@ class App extends Component {
   }
 
   render() {
-    const { tasks, UIState, activeTasks, finishedTasks } = this.props;
+    const { tasks, UIState, activeTasks, finishedTasks, classes, text } = this.props;
     let actualTasks = [];
     switch (UIState.activeTaskTable) {
       case 'active':
@@ -105,15 +121,21 @@ class App extends Component {
     
     return (
       <div>
-        <div className="">
+        <div>
           <div className="inputContainer">
             <FormControl className="">
-              <InputLabel htmlFor="age-customized-select" className="">
-                Что нужно сделать?
-              </InputLabel>
-              <BootstrapInput value={this.props.text} onChange={this.valueHandler} />
+              <TextField
+                id="outlined-name"
+                label="Что нужно сделать?"
+                className={classes.textField}
+                value={text}
+                onChange={this.valueHandler}
+                onKeyPress={this.handleKeyPress}
+                margin="normal"
+                variant="outlined"
+              />
             </FormControl>
-            <Fab onClick={this.addTask} size="medium" color="primary" aria-label="Add" className="addBtn">
+            <Fab onClick={this.addTask} size="medium" color="primary" aria-label="Add" className="">
               <AddIcon />
             </Fab>
           </div>
@@ -125,4 +147,4 @@ class App extends Component {
   }
 }
 
-export default connect(mapStateToProps, actionCreators)(App);
+export default connect(mapStateToProps, actionCreators)(withStyles(styles)(App));

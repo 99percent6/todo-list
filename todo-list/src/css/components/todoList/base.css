@@ -2,9 +2,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
-}
-
-.addBtn {
-  margin-top: 24px !important;
+  margin-top: 20px;
+  margin-bottom: 40px;
 }

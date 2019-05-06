@@ -12,7 +12,7 @@ const styles = theme => ({
   root: {
     margin: '50px auto',
     backgroundColor: theme.palette.background.paper,
-    width: 700,
+    maxWidth: 1000,
   },
 });
 
