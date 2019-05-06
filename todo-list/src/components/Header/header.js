@@ -86,7 +86,7 @@ class Header extends Component {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>
-              <Link className={classes.link} to={{ pathname: '/' }}>Tasker</Link>
+              <Link className={classes.link} to={{ pathname: '/' }}>The Tasker</Link>
             </Typography>
             {auth && (
               <div>
