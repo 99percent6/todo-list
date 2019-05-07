@@ -41,7 +41,8 @@ const styles = theme => ({
     backgroundColor: 'white',
   },
   input: {
-    margin: theme.spacing.unit,
+    margin: '0 16px',
+    width: '100%',
   },
 });
 
@@ -54,6 +55,13 @@ class Item extends Component {
   state = {
     isEdit: false,
     newText: '',
+  }
+
+  handleKeyPress = (e, task) => {
+    const event = e;
+    if (event.key === 'Enter') {
+      this.applyChanges(task);
+    }
   }
 
   editTask = (text, isEdit) => {
@@ -81,10 +89,10 @@ class Item extends Component {
     if (isEdit) {
       return (
         <ListItemSecondaryAction>
-          <IconButton onClick={() => this.applyChanges(task)} aria-label="Delete">
+          <IconButton onClick={() => this.applyChanges(task)} aria-label="Done">
             <DoneIcon />
           </IconButton>
-          <IconButton onClick={() => this.editTask('', false)} aria-label="Delete">
+          <IconButton onClick={() => this.editTask('', false)} aria-label="Close">
             <CloseIcon />
           </IconButton>
         </ListItemSecondaryAction>
@@ -92,7 +100,7 @@ class Item extends Component {
     } else {
       return (
         <ListItemSecondaryAction>
-          <IconButton onClick={() => this.editTask(task.text, true)} aria-label="Delete">
+          <IconButton onClick={() => this.editTask(task.text, true)} aria-label="Edit">
             <EditIcon />
           </IconButton>
           <IconButton onClick={() => onRemove(task.id)} aria-label="Delete">
@@ -136,6 +144,7 @@ class Item extends Component {
           defaultValue={newText}
           className={classes.input}
           onChange={this.handleChange}
+          onKeyPress={(e) => this.handleKeyPress(e, task)}
           inputProps={{
             'aria-label': 'Description',
           }}

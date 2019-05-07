@@ -31,7 +31,10 @@ const UIState = handleActions({
   [actions.updActiveTaskTab](state, { payload: { value } }) {
     let { activeTaskTable } = state;
     activeTaskTable = value;
-    return { activeTaskTable };
+    return {
+      ...state,
+      activeTaskTable
+    };
   },
   [actions.setAuthUserState](state, { payload: { authState } }) {
     return {
@@ -45,7 +48,13 @@ const UIState = handleActions({
       registrationUserState: registrationState,
     };
   },
-}, { activeTaskTable: 'active', authUserState: 'none', registrationUserState: 'none' });
+  [actions.changeVisibleSidebar](state, { payload: { isVisibleSidebar } }) {
+    return {
+      ...state,
+      isVisibleSidebar,
+    } ;
+  },
+}, { activeTaskTable: 'active', authUserState: 'none', registrationUserState: 'none', isVisibleSidebar: false });
 
 const user = handleActions({
   [actions.updUserToken](state, { payload: { token } }) {

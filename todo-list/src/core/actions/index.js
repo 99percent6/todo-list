@@ -22,6 +22,7 @@ export const setAuthUserState = createAction('SET_AUTH_USER_STATE');
 export const setRegistrationUserState = createAction('SET_REGISTRATION_USER_STATE');
 export const setNotificationState = createAction('SET_NOTIFICATION_STATE');
 export const setNotification = createAction('SET_NOTIFICATION');
+export const changeVisibleSidebar = createAction('CHANGE_VISIBLE_SIDEBAR');
 
 export const syncTasks = ({ token }) => async (dispatch) => {
   if (!token) {
@@ -153,14 +154,18 @@ export const getUser = ({ token }) => async (dispatch) => {
   }
   try {
     const url = `${config.api.host}/user/getUser?token=${token}`;
+    dispatch(setAuthUserState({ authState: 'request' }));
     const result = await queryHandler({ url, method: 'GET' });
     if (result && result.code === 200) {
+      dispatch(setAuthUserState({ authState: 'success' }));
       dispatch(updUserCurrent({ user: result.result }));
       return result.result;
     } else {
+      dispatch(setAuthUserState({ authState: 'fail' }));
       return null;
     }
   } catch (error) {
+    dispatch(setAuthUserState({ authState: 'fail' }));
     console.error(error);
   }
 };

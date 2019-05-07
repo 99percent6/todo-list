@@ -64,6 +64,13 @@ class Login extends Component {
     actionMap[prop]({ [prop]: event.target.value });
   };
 
+  handleKeyPress = (e) => {
+    const event = e;
+    if (event.key === 'Enter') {
+      this.auth();
+    }
+  };
+
   auth = async () => {
     const { authUser, login, password, setNotification } = this.props;
     const token = await authUser({ login, password });
@@ -122,6 +129,7 @@ class Login extends Component {
                 type='text'
                 value={login}
                 onChange={this.handleChange('login')}
+                onKeyPress={this.handleKeyPress}
               />
             </FormControl>
             <FormControl className={classNames(classes.margin, classes.textField)}>
@@ -131,6 +139,7 @@ class Login extends Component {
                 type='password'
                 value={password}
                 onChange={this.handleChange('password')}
+                onKeyPress={this.handleKeyPress}
               />
             </FormControl>
             { this.renderBtn() }

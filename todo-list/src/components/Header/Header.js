@@ -25,6 +25,7 @@ const mapStateToProps = (state) => {
 const actionCreators = {
   logout: actions.logout,
   setNotification: actions.setNotification,
+  changeVisibleSidebar: actions.changeVisibleSidebar,
 };
 
 const styles = {
@@ -50,6 +51,11 @@ const styles = {
 class Header extends Component {
   state = {
     anchorEl: null,
+  };
+
+  handleSidebar = () => {
+    const { changeVisibleSidebar } = this.props;
+    changeVisibleSidebar({ isVisibleSidebar: true });
   };
 
   handleMenu = event => {
@@ -82,7 +88,7 @@ class Header extends Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
-            <IconButton className={classes.menuButton} color="inherit" aria-label="Menu">
+            <IconButton className={classes.menuButton} onClick={this.handleSidebar} color="inherit" aria-label="Menu">
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" color="inherit" className={classes.grow}>

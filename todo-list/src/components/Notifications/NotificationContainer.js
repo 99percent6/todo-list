@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
-import NotificationContent from './notificationContent';
+import NotificationContent from './NotificationContent';
 import * as actions from '../../core/actions';
 
 const mapStateToProps = (state) => {
