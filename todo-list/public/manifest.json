@@ -3,13 +3,13 @@
   "name": "The Tasker",
   "icons": [
     {
-      "src": "favicon.svg",
+      "src": "favicon.png",
       "sizes": "144x144 64x64 32x32 24x24 16x16",
       "type": "image/svg+xml"
     }
   ],
   "start_url": ".",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#3f51b5",
-  "background_color": "#ffffff"
+  "background_color": "#3f51b5"
 }

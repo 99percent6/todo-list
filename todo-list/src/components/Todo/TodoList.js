@@ -81,7 +81,7 @@ class App extends Component {
   addTask = (e) => {
     e.preventDefault();
     const { text, asyncAddTask, syncTasks, token } = this.props;
-    if (!text) return;
+    if (!text || text.trim() === '') return;
     const task = {
       id: uniqueId(),
       text: text,
