@@ -1,0 +1,19 @@
+.input-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.options-container {
+  display: flex;
+}
+
+.priority {
+  flex-basis: 35%;
+
+  @media (max-width: 414px) {
+    flex-basis: 100%;
+  }
+}

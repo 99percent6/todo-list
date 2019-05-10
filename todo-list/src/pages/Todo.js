@@ -10,7 +10,7 @@ import { getCookie } from '../core/lib/cookies';
 
 const styles = theme => ({
   root: {
-    margin: '50px auto',
+    margin: '0 auto',
     backgroundColor: theme.palette.background.paper,
     maxWidth: 1000,
   },

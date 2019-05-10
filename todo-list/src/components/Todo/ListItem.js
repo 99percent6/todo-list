@@ -9,24 +9,36 @@ import Avatar from '@material-ui/core/Avatar';
 import EventNote from '@material-ui/icons/EventNote';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import DoneIcon from '@material-ui/icons/Done';
-import CloseIcon from '@material-ui/icons/Close';
-import Input from '@material-ui/core/Input';
 import { withStyles } from '@material-ui/core/styles';
 import * as actions from '../../core/actions';
+import { priorityList } from '../../helpers';
+import DialogEditOptions from '././additional-options/DialogEditOptions';
+import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
-  const { token } = state.user;
+  const { addTask, user } = state;
   const props = {
-    token,
+    token: user.token,
+    priority: addTask.priority,
+    textValue: addTask.newValue,
   };
   return props;
+};
+
+const actionCreators = {
+  updNewValue: actions.updNewValue,
+  asyncUpdateTask: actions.asyncUpdateTask,
+  syncTasks: actions.syncTasks,
+  updPriorityTask: actions.updPriorityTask,
+  setNotification: actions.setNotification,
 };
 
 const styles = theme => ({
   root: {
     width: '80%',
     wordBreak: 'break-all',
+    margin: '10px 0',
+    padding: '5px',
   },
   itemContentActive: {
     cursor: 'pointer',
@@ -39,98 +51,99 @@ const styles = theme => ({
   },
   avatarBackground: {
     backgroundColor: 'white',
+    height: '30px',
   },
   input: {
-    margin: '0 16px',
+    margin: '0',
     width: '100%',
+  },
+  contentContainer: {
+    width: '100%',
+    minHeight: '20px',
+    height: 'auto',
+    display: 'flex',
+    alignItems: 'center',
   },
 });
 
-const actionCreators = {
-  asyncUpdateTask: actions.asyncUpdateTask,
-  syncTasks: actions.syncTasks,
-};
-
 class Item extends Component {
   state = {
-    isEdit: false,
-    newText: '',
-  }
+    isVisibleDialog: false,
+    priorityList: priorityList(),
+  };
 
-  handleKeyPress = (e, task) => {
-    const event = e;
-    if (event.key === 'Enter') {
-      this.applyChanges(task);
-    }
-  }
+  openDialog = () => {
+    const { updNewValue, updPriorityTask, task } = this.props;
+    updNewValue({ text: task.text });
+    updPriorityTask({ priority: task.priority ? task.priority : '' });
+    this.setState({ isVisibleDialog: true });
+  };
 
-  editTask = (text, isEdit) => {
-    this.setState({
-      isEdit,
-      newText: text,
-    });
+  closeDialog = () => {
+    const { updNewValue } = this.props;
+    updNewValue({ text: '' });
+    this.setState({ isVisibleDialog: false });
   }
 
   applyChanges = (task) => {
-    const { newText } = this.state;
-    const { asyncUpdateTask, token, syncTasks } = this.props;
-    task = { ...task, text: newText };
-    this.editTask('', false);
+    const { textValue, setNotification } = this.props;
+    const { asyncUpdateTask, token, syncTasks, priority } = this.props;
+    if (!textValue || textValue === '') {
+      setNotification({ open: true, message: 'Введите название задачи', type: 'error' });
+      return;
+    }
+    task = { ...task, text: textValue, priority };
     asyncUpdateTask({task}).then(res => {
       if (token) {
         syncTasks({ token });
       }
     });
-  }
+    this.closeDialog();
+  };
 
   renderIconGroup = (task) => {
-    const { isEdit } = this.state;
     const { onRemove } = this.props;
-    if (isEdit) {
-      return (
-        <ListItemSecondaryAction>
-          <IconButton onClick={() => this.applyChanges(task)} aria-label="Done">
-            <DoneIcon />
-          </IconButton>
-          <IconButton onClick={() => this.editTask('', false)} aria-label="Close">
-            <CloseIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      );
-    } else {
-      return (
-        <ListItemSecondaryAction>
-          <IconButton onClick={() => this.editTask(task.text, true)} aria-label="Edit">
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => onRemove(task.id)} aria-label="Delete">
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
-      );
-    }
-  }
+    return (
+      <ListItemSecondaryAction>
+        <IconButton onClick={this.openDialog} aria-label="Edit">
+          <EditIcon />
+        </IconButton>
+        <IconButton onClick={() => onRemove(task.id)} aria-label="Delete">
+          <DeleteIcon />
+        </IconButton>
+      </ListItemSecondaryAction>
+    );
+  };
 
-  handleChange = (event) => {
-    event.preventDefault();
-    const { value } = event.target;
-    this.setState({ newText: value });
-  }
-
-  render() {
-    const { task, onChangeState, classes } = this.props;
-    const { newText, isEdit } = this.state;
+  renderContent = () => {
+    const { priorityList } = this.state;
+    const { classes, task, onChangeState } = this.props;
     const isActiveState = task.state === 'active';
     const iconColor = isActiveState ? 'action' : 'disabled';
-
+    const avatar = (
+      <ListItemAvatar>
+        <Avatar className={classes.avatarBackground}>
+          <EventNote color={iconColor} />
+        </Avatar>
+      </ListItemAvatar>
+    );
+    const priority = priorityList.find(item => parseInt(item.code) === parseInt(task.priority));
+    let divStyle = {};
+    if (priority) {
+      divStyle = {
+        minWidth: '20px',
+        width: '20px',
+        height: '20px',
+        borderRadius: '50%',
+        backgroundColor: priority.color,
+        margin: '0 10px',
+        boxShadow: '2px 3px 10px 0px #726f6f',
+      };
+    }
     return (
-      <ListItem className={classes.root}>
-        <ListItemAvatar>
-          <Avatar className={classes.avatarBackground}>
-            <EventNote color={iconColor} />
-          </Avatar>
-        </ListItemAvatar>
-        {!isEdit &&
+      <div className={classes.contentContainer}>
+        { priority ? <div style={divStyle}/> : avatar }
+        <div className={classes.contentContainer}>
           <ListItemText
             classes={{
               primary: isActiveState ? classes.itemContentActive : classes.itemContentDisabled,
@@ -138,22 +151,25 @@ class Item extends Component {
             primary={task.text}
             onClick={() => onChangeState(task)}
           />
-        }
-        {isEdit &&
-          <Input
-          defaultValue={newText}
-          className={classes.input}
-          onChange={this.handleChange}
-          onKeyPress={(e) => this.handleKeyPress(e, task)}
-          inputProps={{
-            'aria-label': 'Description',
-          }}
-        />
-        }
-        {this.renderIconGroup(task)}
-      </ListItem>
+        </div>
+      </div>
     );
   }
+
+  render() {
+    const { task, classes } = this.props;
+    const { isVisibleDialog } = this.state;
+
+    return (
+      <div>
+        <ListItem className={classes.root}>
+          {this.renderContent()}
+          {this.renderIconGroup(task)}
+        </ListItem>
+        <DialogEditOptions open={isVisibleDialog} onCloseDialog={this.closeDialog} task={task} onSaveTask={() => this.applyChanges(task)}/>
+      </div>
+    );
+  };
 }
 
 export default connect(mapStateToProps, actionCreators)(withStyles(styles)(Item));

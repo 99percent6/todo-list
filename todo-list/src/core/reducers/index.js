@@ -3,14 +3,33 @@ import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
 import { omit } from 'lodash';
 
-const text = handleActions({
+const addTask = handleActions({
   [actions.updText](state, { payload: { text } }) {
-    return text;
+    return {
+      ...state,
+      value: text,
+    };
   },
-  [actions.addTask]() {
-    return '';
+  [actions.updNewValue](state, { payload: { text } }) {
+    return {
+      ...state,
+      newValue: text,
+    };
   },
-}, '');
+  [actions.addTask](state) {
+    return {
+      ...state,
+      value: '',
+      priority: '',
+    };
+  },
+  [actions.updPriorityTask](state, { payload: { priority } }) {
+    return {
+      ...state,
+      priority,
+    };
+  },
+}, { value: '', priority: '', newValue: '' });
 
 const tasks = handleActions({
   [actions.addTask](state, { payload: { task } }) {
@@ -137,7 +156,7 @@ const notifications = handleActions({
 }, { open: false, message: '', type: '' });
 
 export default combineReducers({
-  text,
+  addTask,
   tasks,
   UIState,
   user,

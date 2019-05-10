@@ -1,16 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { uniqueId } from 'lodash';
-import FormControl from '@material-ui/core/FormControl';
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
 import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import * as actions from '../../core/actions';
 import List from './List';
+import AddTask from './AddTask';
 import ListStateTabs from './ListStateTabs';
 import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../../core/selectors';
-import '../../css/components/todoList/base.css';
+import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
   const { text, UIState, user } = state;
@@ -30,7 +26,6 @@ const actionCreators = {
   delTask: actions.delTask,
   updTask: actions.updTask,
   replaceTasks: actions.replaceTasks,
-  asyncAddTask: actions.asyncAddTask,
   asyncDeleteTask: actions.asyncDeleteTask,
   asyncUpdateTask: actions.asyncUpdateTask,
   syncTasks: actions.syncTasks,
@@ -51,21 +46,7 @@ class App extends Component {
     if (token) {
       syncTasks({ token });
     }
-  }
-
-  handleKeyPress = (e) => {
-    const event = e;
-    if (event.key === 'Enter') {
-      this.addTask(event);
-    }
-  }
-
-  valueHandler = (e) => {
-    const { target } = e;
-    const { value } = target;
-    const { updText } = this.props;
-    updText({ text: value });
-  }
+  };
 
   changedState = (task) => {
     const { asyncUpdateTask, syncTasks, token } = this.props;
@@ -76,24 +57,7 @@ class App extends Component {
         syncTasks({ token });
       }
     });
-  }
-
-  addTask = (e) => {
-    e.preventDefault();
-    const { text, asyncAddTask, syncTasks, token } = this.props;
-    if (!text || text.trim() === '') return;
-    const task = {
-      id: uniqueId(),
-      text: text,
-      state: 'active',
-      createdAt: Date.now(),
-    };
-    asyncAddTask({ task, token }).then(res => {
-      if (token) {
-        syncTasks({ token });
-      }
-    });
-  }
+  };
 
   removeTask = (id) => {
     const { asyncDeleteTask, syncTasks, token } = this.props;
@@ -102,10 +66,10 @@ class App extends Component {
         syncTasks({ token });
       }
     });
-  }
+  };
 
   render() {
-    const { tasks, UIState, activeTasks, finishedTasks, classes, text } = this.props;
+    const { tasks, UIState, activeTasks, finishedTasks } = this.props;
     let actualTasks = [];
     switch (UIState.activeTaskTable) {
       case 'active':
@@ -118,33 +82,17 @@ class App extends Component {
         actualTasks = tasks;
         break;
     }
-    
+
     return (
       <div>
         <div>
-          <div className="inputContainer">
-            <FormControl className="">
-              <TextField
-                id="outlined-name"
-                label="Что нужно сделать?"
-                className={classes.textField}
-                value={text}
-                onChange={this.valueHandler}
-                onKeyPress={this.handleKeyPress}
-                margin="normal"
-                variant="outlined"
-              />
-            </FormControl>
-            <Fab onClick={this.addTask} size="medium" color="primary" aria-label="Add" className="">
-              <AddIcon />
-            </Fab>
-          </div>
+          <AddTask/>
         </div>
         <ListStateTabs/>
         <List tasks={actualTasks} onRemove={this.removeTask} onChangeState={this.changedState}/>
       </div>
     );
-  }
+  };
 }
 
 export default connect(mapStateToProps, actionCreators)(withStyles(styles)(App));
