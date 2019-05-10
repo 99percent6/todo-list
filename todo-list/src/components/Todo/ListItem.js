@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
 import Avatar from '@material-ui/core/Avatar';
 import EventNote from '@material-ui/icons/EventNote';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -13,6 +11,7 @@ import { withStyles } from '@material-ui/core/styles';
 import * as actions from '../../core/actions';
 import { priorityList } from '../../helpers';
 import DialogEditOptions from '././additional-options/DialogEditOptions';
+import ListItemActions from './ListItemActions';
 import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
@@ -35,7 +34,7 @@ const actionCreators = {
 
 const styles = theme => ({
   root: {
-    width: '80%',
+    width: '100%',
     wordBreak: 'break-all',
     margin: '10px 0',
     padding: '5px',
@@ -70,6 +69,20 @@ class Item extends Component {
   state = {
     isVisibleDialog: false,
     priorityList: priorityList(),
+    actions: [
+      {
+        label: 'Редактировать',
+        value: 'edit',
+        icon: <EditIcon/>,
+        action: () => this.openDialog(),
+      },
+      {
+        label: 'Удалить',
+        value: 'delete',
+        icon: <DeleteIcon/>,
+        action: () => this.props.onRemove(this.props.task.id),
+      },
+    ],
   };
 
   openDialog = () => {
@@ -102,17 +115,8 @@ class Item extends Component {
   };
 
   renderIconGroup = (task) => {
-    const { onRemove } = this.props;
-    return (
-      <ListItemSecondaryAction>
-        <IconButton onClick={this.openDialog} aria-label="Edit">
-          <EditIcon />
-        </IconButton>
-        <IconButton onClick={() => onRemove(task.id)} aria-label="Delete">
-          <DeleteIcon />
-        </IconButton>
-      </ListItemSecondaryAction>
-    );
+    const { actions } = this.state;
+    return <ListItemActions actions={actions}/>
   };
 
   renderContent = () => {

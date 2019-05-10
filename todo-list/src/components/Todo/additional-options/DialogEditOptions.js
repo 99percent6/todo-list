@@ -18,6 +18,9 @@ const styles = theme => ({
   paperFullWidth: {
     margin: '10px',
   },
+  title: {
+    wordBreak: 'break-all',
+  },
 });
 
 class DialogEditOptions extends Component {
@@ -41,7 +44,7 @@ class DialogEditOptions extends Component {
           onClose={onCloseDialog}
           aria-labelledby="max-width-dialog-title"
         >
-          <DialogTitle id="max-width-dialog-title">{ task.text }</DialogTitle>
+          <DialogTitle id="max-width-dialog-title" className={classes.title}>{ task.text }</DialogTitle>
           <DialogContent>
             <TaskLabelEdit/>
             <Priority/>
