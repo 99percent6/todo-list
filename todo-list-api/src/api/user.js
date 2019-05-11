@@ -2,6 +2,7 @@ import { Router } from 'express';
 import Database from '../lib/db';
 import Redis from '../lib/redis';
 import TokenGenerator from 'uuid-token-generator';
+import { isValidRegistrationData } from '../helpers/user';
 
 const redisClient = new Redis({ expire: 3600 });
 const tokgen = new TokenGenerator(256, TokenGenerator.BASE58);
@@ -15,6 +16,10 @@ export default ({ config, db }) => {
     const { login, password, repeatedPassword, name, email } = user;
     if (!login || !password || !repeatedPassword || !name || !email) {
       return res.send({result: 'Missing required field', code: 500}).status(500);
+    }
+    const isValidData = isValidRegistrationData(user);
+    if (isValidData.code !== 200) {
+      return res.send(isValidData).status(isValidData.code);
     }
     try {
       delete user.repeatedPassword;

@@ -28,7 +28,8 @@
     "firebase": "^5.9.4",
     "redis": "^2.8.0",
     "redis-jsonify": "^1.2.0",
-    "uuid-token-generator": "^1.0.0"
+    "uuid-token-generator": "^1.0.0",
+    "validator": "^10.11.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
