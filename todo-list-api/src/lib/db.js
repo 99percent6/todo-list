@@ -6,6 +6,7 @@ export default class db {
     this.db = db;
     this.usersCollectionName = 'users';
     this.tasksCollectionName = 'todo-list';
+    this.feedbackCollectionName = 'feedback';
   };
 
   async findByField ({ field, operator = '==', value, collection, sort }) {
@@ -176,6 +177,24 @@ export default class db {
     try {
       const result = await this.db.collection(this.tasksCollectionName).doc(task.id).update(task);
       return { code: 200, result: 'OK' };
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async sendFeedback ({ data }) {
+    if (!data) {
+      console.error('Missing required fields');
+      return { code: 404, result: 'Missing required fields' };
+    }
+    try {
+      const result = await this.db.collection(this.feedbackCollectionName).add(data);
+      if (result) {
+        return { code: 200, result: result.id };
+      } else {
+        return { code: 500, result: "Task doesn't add" };
+      }
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };

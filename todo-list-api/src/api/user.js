@@ -2,7 +2,7 @@ import { Router } from 'express';
 import Database from '../lib/db';
 import Redis from '../lib/redis';
 import TokenGenerator from 'uuid-token-generator';
-import { isValidRegistrationData } from '../helpers/user';
+import { isValidRegistrationData, isValidEmail } from '../helpers/user';
 
 const redisClient = new Redis({ expire: 3600 });
 const tokgen = new TokenGenerator(256, TokenGenerator.BASE58);
@@ -100,6 +100,19 @@ export default ({ config, db }) => {
       console.error(error);
       res.send({ result: 'Internal error', code: 500 }).status(500);
     }
+  });
+
+  api.post('/sendFeedback', async function(req, res) {
+    const data = req.body;
+    const { title, content, email } = data;
+    if (!title || !content || !email) {
+      return res.send({result: 'Missing required field', code: 500}).status(500);
+    }
+    if (!isValidEmail(email)) {
+      return res.send({result: 'Email is not valid', code: 500}).status(500);
+    }
+    const result = await database.sendFeedback({ data });
+    return res.send(result).status(result.code);
   });
 
   return api;

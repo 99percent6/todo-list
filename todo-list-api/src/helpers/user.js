@@ -24,8 +24,8 @@ export const isValidRegistrationData = (userData) => {
             return { code: 500, result: 'Passwords do not match' };
           }
         } else if (key === 'email') {
-          const isValidEmail = validator.isEmail(userData[key]) && !validator.isEmpty(userData[key]);
-          if (!isValidEmail) {
+          const validEmail = isValidEmail(userData[key]);
+          if (!validEmail) {
             return { code: 500, result: 'Not valid email' };
           }
         } else if (key === 'name') {
@@ -53,4 +53,12 @@ export const isObject = (obj) => {
   } else {
     return false;
   }
-}
+};
+
+export const isValidEmail = (value) => {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+  const validEmail = validator.isEmail(value) && !validator.isEmpty(value);
+  return validEmail;
+};

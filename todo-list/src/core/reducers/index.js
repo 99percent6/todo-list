@@ -155,6 +155,35 @@ const notifications = handleActions({
   },
 }, { open: false, message: '', type: '' });
 
+const feedback = handleActions({
+  [actions.updFeedbackTitle](state, { payload: { title } }) {
+    return {
+      ...state,
+      title,
+    };
+  },
+  [actions.updFeedbackContent](state, { payload: { content } }) {
+    return {
+      ...state,
+      content,
+    };
+  },
+  [actions.updFeedbackEmail](state, { payload: { email } }) {
+    return {
+      ...state,
+      email,
+    };
+  },
+  [actions.updFeedbackAllFields](state, { payload: { title, content, email } }) {
+    return {
+      ...state,
+      title,
+      content,
+      email,
+    }
+  },
+}, { title: '', content: '', email: '' });
+
 export default combineReducers({
   addTask,
   tasks,
@@ -163,4 +192,5 @@ export default combineReducers({
   userAuth,
   userRegistration,
   notifications,
+  feedback,
 });

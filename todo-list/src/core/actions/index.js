@@ -3,6 +3,8 @@ import config from '../../config/config.json';
 import { queryHandler } from '../lib/task';
 import { deleteCookie } from '../lib/cookies';
 
+const apiHost = config.api.host;
+
 export const updUserLogin = createAction('UPD_USER_LOGIN');
 export const updUserPassword = createAction('UPD_USER_PASSWORD');
 export const updUserToken = createAction('UPD_USER_TOKEN');
@@ -25,13 +27,17 @@ export const setRegistrationUserState = createAction('SET_REGISTRATION_USER_STAT
 export const setNotificationState = createAction('SET_NOTIFICATION_STATE');
 export const setNotification = createAction('SET_NOTIFICATION');
 export const changeVisibleSidebar = createAction('CHANGE_VISIBLE_SIDEBAR');
+export const updFeedbackTitle = createAction('UPD_FEEDBACK_TITLE');
+export const updFeedbackContent = createAction('UPD_FEEDBACK_CONTENT');
+export const updFeedbackEmail = createAction('UPD_FEEDBACK_EMAIL');
+export const updFeedbackAllFields = createAction('UPD_FEEDBACK_ALL_FIELDS');
 
 export const syncTasks = ({ token }) => async (dispatch) => {
   if (!token) {
     throw new Error('Token is required field');
   }
   try {
-    const url = `${config.api.host}/tasks/list`;
+    const url = `${apiHost}/tasks/list`;
     const result = await queryHandler({ url, method: 'GET' });
     if (result && result.code === 200) {
       let objList = {};
@@ -51,7 +57,7 @@ export const asyncAddTask = ({ task }) => async (dispatch) => {
   }
   try {
     dispatch(addTask({ task }));
-    const url = `${config.api.host}/tasks/addTask`;
+    const url = `${apiHost}/tasks/addTask`;
     const result = await queryHandler({ url, method: 'PUT', body: task });
     return result;
   } catch (error) {
@@ -65,7 +71,7 @@ export const asyncDeleteTask = ({ id }) => async (dispatch) => {
   }
   try {
     dispatch(delTask({ id }));
-    const url = `${config.api.host}/tasks/deleteTask`;
+    const url = `${apiHost}/tasks/deleteTask`;
     const result = await queryHandler({ url, method: 'POST', body: { id } });
     return result;
   } catch (error) {
@@ -79,7 +85,7 @@ export const asyncUpdateTask = ({ task }) => async (dispatch) => {
   }
   try {
     dispatch(updTask({ task }));
-    const url = `${config.api.host}/tasks/updateTask`;
+    const url = `${apiHost}/tasks/updateTask`;
     const result = await queryHandler({ url, method: 'PUT', body: task });
     return result;
   } catch (error) {
@@ -92,7 +98,7 @@ export const registrationUser = ({ user }) => async (dispatch) => {
     throw new Error('User is required field');
   }
   try {
-    const url = `${config.api.host}/user/registration`;
+    const url = `${apiHost}/user/registration`;
     dispatch(setRegistrationUserState({ registrationState: 'request' }));
     const result = await queryHandler({ url, method: 'POST', body: user });
     if (result && result.code === 200) {
@@ -113,7 +119,7 @@ export const authUser = ({ login, password }) => async (dispatch) => {
     throw new Error('Missing required fields');
   }
   try {
-    const url = `${config.api.host}/user/login`;
+    const url = `${apiHost}/user/login`;
     dispatch(setAuthUserState({ authState: 'request' }));
     const result = await queryHandler({ url, method: 'POST', body: { login, password } });
     if (result && result.code === 200) {
@@ -135,7 +141,7 @@ export const logout = ({ token }) => async (dispatch) => {
     throw new Error('Token is required field');
   }
   try {
-    const url = `${config.api.host}/user/logout`;
+    const url = `${apiHost}/user/logout`;
     const result = await queryHandler({ url, method: 'POST' });
     if (result && result.code === 200) {
       deleteCookie('token');
@@ -155,7 +161,7 @@ export const getUser = ({ token }) => async (dispatch) => {
     throw new Error('Token is required field');
   }
   try {
-    const url = `${config.api.host}/user/getUser?token=${token}`;
+    const url = `${apiHost}/user/getUser?token=${token}`;
     dispatch(setAuthUserState({ authState: 'request' }));
     const result = await queryHandler({ url, method: 'GET' });
     if (result && result.code === 200) {
@@ -168,6 +174,20 @@ export const getUser = ({ token }) => async (dispatch) => {
     }
   } catch (error) {
     dispatch(setAuthUserState({ authState: 'fail' }));
+    console.error(error);
+  }
+};
+
+export const sendFeedback = ({ data }) => async (dispatch) => {
+  if (!data) {
+    throw new Error('Missing required fields');
+  }
+  try {
+    const url = `${apiHost}/user/sendFeedback`;
+    const result = await queryHandler({ url, method: 'POST', body: data });
+    dispatch(updFeedbackAllFields({ title: '', content: '', email: '' }));
+    return result;
+  } catch (error) {
     console.error(error);
   }
 };
