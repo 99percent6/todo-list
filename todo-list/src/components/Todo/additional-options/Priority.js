@@ -26,6 +26,9 @@ const styles = theme => ({
   formControl: {
     minWidth: 200,
   },
+  itemMenu: {
+    padding: '0px 0px 0px 15px',
+  },
   selectValue: {
     display: 'flex',
     alignItems: 'center',
@@ -51,13 +54,14 @@ class Priority extends Component {
 
   renderMenuItem = () => {
     const { priority } = this.state;
+    const { classes } = this.props;
     let style = priority.commonStyle;
     return priority.list.map(item => {
       style = { ...style, backgroundColor: item.color };
       return (
         <MenuItem key={item.color} value={item.code}>
           <div style={style}/>
-          <ListItemText inset primary={item.value} />
+          <ListItemText className={classes.itemMenu} inset primary={item.value} />
         </MenuItem>
       )
     })

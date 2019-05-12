@@ -10,18 +10,18 @@ import * as actions from '../../../core/actions';
 const mapStateToProps = (state) => {
   const { addTask } = state;
   const props = {
-    taskLabel: addTask.newValue,
+    taskLabel: addTask.editValue,
   };
   return props;
 };
 
 const actionCreators = {
-  updNewValue: actions.updNewValue,
+  updEditValue: actions.updEditValue,
 };
 
 const styles = theme => ({
   margin: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(),
   },
   textField: {
     width: '100%',
@@ -32,8 +32,8 @@ const styles = theme => ({
 class TaskLabelEdit extends Component {
   handleChange = (event) => {
     const { value } = event.target;
-    const { updNewValue } = this.props;
-    updNewValue({ text: value });
+    const { updEditValue } = this.props;
+    updEditValue({ text: value });
   };
 
   render() {

@@ -15,6 +15,7 @@ const mapStateToProps = (state) => {
   const props = {
     textValue: addTask.value,
     priority: addTask.priority,
+    executionDate: addTask.executionDate,
     token: user.token,
   };
   return props;
@@ -30,7 +31,7 @@ const styles = theme => ({
   textField: {
     marginTop: 0,
     marginBottom: 0,
-    marginLeft: theme.spacing.unit,
+    marginLeft: theme.spacing(),
     marginRight: '20px',
   },
 });
@@ -52,7 +53,7 @@ class AddTask extends Component {
 
   addTask = (e) => {
     e.preventDefault();
-    const { textValue, priority, asyncAddTask, syncTasks, token } = this.props;
+    const { textValue, priority, executionDate, asyncAddTask, syncTasks, token } = this.props;
     if (!textValue || textValue.trim() === '') return;
     const task = {
       id: uniqueId(),
@@ -60,6 +61,7 @@ class AddTask extends Component {
       state: 'active',
       createdAt: Date.now(),
       priority,
+      executionDate,
     };
     asyncAddTask({ task, token }).then(res => {
       if (token) {

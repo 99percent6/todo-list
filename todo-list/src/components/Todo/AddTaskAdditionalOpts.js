@@ -6,6 +6,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Priority from './additional-options/Priority';
+import PeriodOfExecution from './additional-options/PeriodOfExecution';
 import '../../css/components/todoList/base.scss';
 
 const styles = theme => ({
@@ -34,6 +35,7 @@ class AddTaskAdditionalOpts extends Component {
           </ExpansionPanelSummary>
           <ExpansionPanelDetails className="options-container">
             <Priority/>
+            <PeriodOfExecution/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </div>

@@ -8,6 +8,8 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Priority from './Priority';
 import TaskLabelEdit from './TaskLabelEdit';
+import PeriodOfExecution from './PeriodOfExecution';
+import '../../../css/components/todoList/base.scss';
 
 const mapStateToProps = () => {
   const props = {};
@@ -47,7 +49,10 @@ class DialogEditOptions extends Component {
           <DialogTitle id="max-width-dialog-title" className={classes.title}>{ task.text }</DialogTitle>
           <DialogContent>
             <TaskLabelEdit/>
-            <Priority/>
+            <div className="options-container">
+              <Priority/>
+              <PeriodOfExecution/>
+            </div>
           </DialogContent>
           <DialogActions>
             <Button onClick={onSaveTask} color="primary">

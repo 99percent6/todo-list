@@ -12,6 +12,7 @@ import * as actions from '../../core/actions';
 import { priorityList } from '../../helpers';
 import DialogEditOptions from '././additional-options/DialogEditOptions';
 import ListItemActions from './ListItemActions';
+import Date from '../Date';
 import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
@@ -19,16 +20,18 @@ const mapStateToProps = (state) => {
   const props = {
     token: user.token,
     priority: addTask.priority,
-    textValue: addTask.newValue,
+    textValue: addTask.editValue,
+    executionDate: addTask.executionDate,
   };
   return props;
 };
 
 const actionCreators = {
-  updNewValue: actions.updNewValue,
+  updEditValue: actions.updEditValue,
   asyncUpdateTask: actions.asyncUpdateTask,
   syncTasks: actions.syncTasks,
   updPriorityTask: actions.updPriorityTask,
+  updPeriodOfExecution: actions.updPeriodOfExecution,
   setNotification: actions.setNotification,
 };
 
@@ -36,8 +39,8 @@ const styles = theme => ({
   root: {
     width: '100%',
     wordBreak: 'break-all',
-    margin: '10px 0',
-    padding: '5px',
+    margin: '5px 0',
+    padding: 0,
   },
   itemContentActive: {
     cursor: 'pointer',
@@ -86,32 +89,56 @@ class Item extends Component {
   };
 
   openDialog = () => {
-    const { updNewValue, updPriorityTask, task } = this.props;
-    updNewValue({ text: task.text });
+    const { updEditValue, updPriorityTask, updPeriodOfExecution, task } = this.props;
+    updEditValue({ text: task.text });
     updPriorityTask({ priority: task.priority ? task.priority : '' });
+    updPeriodOfExecution({ executionDate: task.executionDate });
     this.setState({ isVisibleDialog: true });
   };
 
   closeDialog = () => {
-    const { updNewValue } = this.props;
-    updNewValue({ text: '' });
+    const { updEditValue, updPriorityTask, updPeriodOfExecution } = this.props;
+    updEditValue({ text: '' });
+    updPriorityTask({ priority:  '' });
+    updPeriodOfExecution({ executionDate: null });
     this.setState({ isVisibleDialog: false });
   }
 
   applyChanges = (task) => {
-    const { textValue, setNotification } = this.props;
-    const { asyncUpdateTask, token, syncTasks, priority } = this.props;
+    const { textValue, setNotification, asyncUpdateTask, token, syncTasks, priority, executionDate } = this.props;
     if (!textValue || textValue === '') {
       setNotification({ open: true, message: 'Введите название задачи', type: 'error' });
       return;
     }
-    task = { ...task, text: textValue, priority };
+    task = { ...task, text: textValue, priority, executionDate };
     asyncUpdateTask({task}).then(res => {
       if (token) {
         syncTasks({ token });
       }
     });
     this.closeDialog();
+  };
+
+  buildSecondaryTaskText = (task) => {
+    const secondaryData = [
+      {
+        label: 'Срок исполнения: ',
+        value: task.executionDate ? <Date date={task.executionDate} /> : null,
+      },
+    ];
+
+    return secondaryData.map(item => {
+      if (item.value) {
+        return (
+          <span key={item.label}>
+            <span>{ item.label }</span>
+            { item.value }
+          </span>
+        );
+      } else {
+        return null;
+      }
+    })
   };
 
   renderIconGroup = (task) => {
@@ -124,6 +151,7 @@ class Item extends Component {
     const { classes, task, onChangeState } = this.props;
     const isActiveState = task.state === 'active';
     const iconColor = isActiveState ? 'action' : 'disabled';
+    const secondaryText = this.buildSecondaryTaskText(task);
     const avatar = (
       <ListItemAvatar>
         <Avatar className={classes.avatarBackground}>
@@ -154,6 +182,7 @@ class Item extends Component {
             }}
             primary={task.text}
             onClick={() => onChangeState(task)}
+            secondary={secondaryText}
           />
         </div>
       </div>

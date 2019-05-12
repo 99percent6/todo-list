@@ -10,10 +10,10 @@ const addTask = handleActions({
       value: text,
     };
   },
-  [actions.updNewValue](state, { payload: { text } }) {
+  [actions.updEditValue](state, { payload: { text } }) {
     return {
       ...state,
-      newValue: text,
+      editValue: text,
     };
   },
   [actions.addTask](state) {
@@ -21,6 +21,7 @@ const addTask = handleActions({
       ...state,
       value: '',
       priority: '',
+      executionDate: null,
     };
   },
   [actions.updPriorityTask](state, { payload: { priority } }) {
@@ -29,7 +30,13 @@ const addTask = handleActions({
       priority,
     };
   },
-}, { value: '', priority: '', newValue: '' });
+  [actions.updPeriodOfExecution](state, { payload: { executionDate } }) {
+    return {
+      ...state,
+      executionDate,
+    };
+  },
+}, { value: '', editValue: '', priority: '', executionDate: null });
 
 const tasks = handleActions({
   [actions.addTask](state, { payload: { task } }) {

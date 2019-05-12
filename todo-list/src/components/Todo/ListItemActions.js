@@ -13,6 +13,9 @@ const styles = theme => ({
   root: {
     padding: '7px',
   },
+  itemText: {
+    padding: 0,
+  },
 });
 
 class ListItemActions extends Component {
@@ -28,7 +31,7 @@ class ListItemActions extends Component {
           <ListItemIcon>
             { item.icon }
           </ListItemIcon>
-          <ListItemText inset primary={item.label} />
+          <ListItemText className={classes.itemText} inset primary={item.label} />
         </MenuItem>
       );
     });

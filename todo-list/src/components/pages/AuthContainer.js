@@ -20,7 +20,7 @@ const styles = theme => ({
     justifyContent: 'center',
   },
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(),
   },
 });
 

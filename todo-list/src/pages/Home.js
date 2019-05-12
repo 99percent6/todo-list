@@ -7,7 +7,7 @@ import '../css/pages/home/base.scss';
 
 const styles = theme => ({
   button: {
-    margin: theme.spacing.unit,
+    margin: theme.spacing(),
   },
 });
 
