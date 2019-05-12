@@ -24,7 +24,12 @@ const actionCreators = {
 
 const styles = {
   text: {
-    padding: '0 ',
+    padding: '0',
+    letterSpacing: 0,
+    color: 'black',
+  },
+  icon: {
+    minWidth: '40px',
   },
   list: {
     width: 300,
@@ -59,9 +64,9 @@ class Sidebar extends Component {
         <List>
           {['Связаться с разработчиком'].map((text) => (
             <ListItem button key={text}>
-              <ListItemIcon>{<MailIcon />}</ListItemIcon>
+              <ListItemIcon classes={{root: classes.icon}}>{<MailIcon />}</ListItemIcon>
               <Link className={classes.link} to={{ pathname: '/feedback' }}>
-                <ListItemText className={classes.text} primary={text} />
+                <ListItemText classes={{primary: classes.text}} primary={text} />
               </Link>
             </ListItem>
           ))}
