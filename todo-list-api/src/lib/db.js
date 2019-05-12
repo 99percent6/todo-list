@@ -128,6 +128,8 @@ export default class db {
       const result = await this.findByField({ field: 'author', value: userId, collection: this.tasksCollectionName, sort });
       if (result && result.code === 200 && result.result.length) {
         return result;
+      } else if (result && result.code === 404) {
+        return { code: 200, result: [] };
       } else {
         return { code: result.code, result: [] };
       }

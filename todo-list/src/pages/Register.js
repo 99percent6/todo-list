@@ -8,7 +8,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
-import Loader from '../components/loader'; 
+import Loader from '../components/Loader'; 
 import * as actions from '../core/actions';
 import validator from 'validator';
 import ValidationMessage from '../components/pages/ValidationMessage';

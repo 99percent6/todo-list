@@ -38,6 +38,11 @@ const styles = theme => ({
     marginLeft: theme.spacing(),
     marginRight: '20px',
   },
+  loaderContainer: {
+    marginTop: '30px',
+    display: 'flex',
+    justifyContent: 'center',
+  },
 });
 
 class App extends Component {
@@ -68,9 +73,10 @@ class App extends Component {
     });
   };
 
-  render() {
+  renderList = () => {
     const { tasks, UIState, activeTasks, finishedTasks } = this.props;
     let actualTasks = [];
+
     switch (UIState.activeTaskTable) {
       case 'active':
         actualTasks = activeTasks;
@@ -83,13 +89,17 @@ class App extends Component {
         break;
     }
 
+    return <List tasks={actualTasks} onRemove={this.removeTask} onChangeState={this.changedState}/>;
+  }
+
+  render() {
     return (
       <div>
         <div>
           <AddTask/>
         </div>
         <ListStateTabs/>
-        <List tasks={actualTasks} onRemove={this.removeTask} onChangeState={this.changedState}/>
+        { this.renderList() }
       </div>
     );
   };

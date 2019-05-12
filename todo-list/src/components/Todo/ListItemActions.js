@@ -16,6 +16,9 @@ const styles = theme => ({
   itemText: {
     padding: 0,
   },
+  icon: {
+    minWidth: '40px',
+  },
 });
 
 class ListItemActions extends Component {
@@ -28,7 +31,7 @@ class ListItemActions extends Component {
     return actions.map(item => {
       return (
         <MenuItem className={classes.root} key={item.value} selected={false} onClick={() => this.handleAction(item.action)}>
-          <ListItemIcon>
+          <ListItemIcon classes={{root: classes.icon}}>
             { item.icon }
           </ListItemIcon>
           <ListItemText className={classes.itemText} inset primary={item.label} />

@@ -25,6 +25,7 @@ export const updTask = createAction('UPD_TASK');
 export const replaceTasks = createAction('REPLACE_TASKS');
 export const setAuthUserState = createAction('SET_AUTH_USER_STATE');
 export const setRegistrationUserState = createAction('SET_REGISTRATION_USER_STATE');
+export const setSyncTasksState = createAction('SET_SYNC_TASKS_STATE');
 export const setNotificationState = createAction('SET_NOTIFICATION_STATE');
 export const setNotification = createAction('SET_NOTIFICATION');
 export const changeVisibleSidebar = createAction('CHANGE_VISIBLE_SIDEBAR');
@@ -35,19 +36,26 @@ export const updFeedbackAllFields = createAction('UPD_FEEDBACK_ALL_FIELDS');
 
 export const syncTasks = ({ token }) => async(dispatch) => {
     if (!token) {
+        dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         throw new Error('Token is required field');
     }
     try {
-        const url = `${apiHost}/tasks/list`;
+				const url = `${apiHost}/tasks/list`;
+				dispatch(setSyncTasksState({ syncTasksState: 'request' }));
         const result = await queryHandler({ url, method: 'GET' });
         if (result && result.code === 200) {
             let objList = {};
             result.result.forEach(task => {
                 objList = { ...objList, [task.id]: task };
-            })
+						})
+						dispatch(setSyncTasksState({ syncTasksState: 'success' }));
             dispatch(replaceTasks({ tasks: objList }));
-        }
+        } else {
+						dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
+						dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка задач, попробуйте перелогиниться.', type: 'error' }));
+				}
     } catch (error) {
+				dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         console.error(error);
     }
 }

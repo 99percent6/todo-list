@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import * as actions from '../core/actions';
 import { setCookie } from '../core/lib/cookies';
 import config from '../config/config.json';
-import Loader from '../components/loader'; 
+import Loader from '../components/Loader'; 
 import '../css/pages/login/base.css';
 
 const mapStateToProps = (state) => {
