@@ -21,7 +21,7 @@ const actionCreators = {
 
 const styles = theme => ({
   margin: {
-    margin: theme.spacing(),
+    margin: theme.spacing(1),
   },
 });
 

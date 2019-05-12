@@ -43,13 +43,13 @@ const styles = theme => ({
     justifyContent: 'center',
   },
   margin: {
-    margin: theme.spacing(),
+    margin: theme.spacing(1),
   },
   textField: {
     flexBasis: 240,
   },
   button: {
-    margin: theme.spacing(),
+    margin: theme.spacing(1),
     minWidth: '80px',
   },
 });
