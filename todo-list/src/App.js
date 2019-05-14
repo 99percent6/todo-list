@@ -53,7 +53,7 @@ class App extends Component {
         <Route path="/" exact component={Home}/>
         <Route path="/login" component={Login}/>
         <Route path="/registration" component={Register}/>
-        <Route path="/todo" component={Todo}/>
+        <Route path={["/todo/:type", "/todo"]} component={Todo}/>
         <Route path="/feedback" component={Feedback}/>
         <Sidebar/>
         <Notification/>

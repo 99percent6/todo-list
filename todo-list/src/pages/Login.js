@@ -93,7 +93,7 @@ class Login extends Component {
         const encodeUser = cryptr.encrypt(JSON.stringify(user));
         setCookie('token', token, { expires: new Date(Date.now() + expire) });
         setCookie('user', encodeUser, { expires: new Date(Date.now() + expire) });
-        history.replace('/todo');
+        history.replace('/todo/tasks');
       }
     });
   };

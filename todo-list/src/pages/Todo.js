@@ -19,19 +19,27 @@ const styles = theme => ({
 class TodoTabs extends Component {
   constructor(props) {
     super(props);
-    const { history } = props;
+    const { history, match } = props;
+    const routeType = match.params && match.params.type;
     const token = getCookie('token');
-    let user = getCookie('user');
+    const user = getCookie('user');
+    
+    this.state = {
+      value: routeType === 'tasks' ? 0 : 1,
+      allowRouteTypes: ['tasks', 'notes'],
+    };
+
     if (!token || !user) {
       history.replace('/');
     }
-  }
-
-  state = {
-    value: 0,
+    if (!routeType || !this.state.allowRouteTypes.includes(routeType)) {
+      history.replace('/todo/tasks');
+    }
   };
 
   handleChange = (event, value) => {
+    const { history } = this.props;
+    history.push({ pathname: `/todo/${value === 1 ? 'notes' : 'tasks'}` });
     this.setState({ value });
   };
 

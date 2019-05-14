@@ -92,7 +92,7 @@ class Item extends Component {
     const { updEditValue, updPriorityTask, updPeriodOfExecution, task } = this.props;
     updEditValue({ text: task.text });
     updPriorityTask({ priority: task.priority ? task.priority : '' });
-    updPeriodOfExecution({ executionDate: task.executionDate });
+    updPeriodOfExecution({ executionDate: task.executionDate ? task.executionDate : null });
     this.setState({ isVisibleDialog: true });
   };
 
