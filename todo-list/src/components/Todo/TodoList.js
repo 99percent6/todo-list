@@ -6,6 +6,7 @@ import List from './List';
 import AddTask from './AddTask';
 import ListStateTabs from './ListStateTabs';
 import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../../core/selectors';
+import Loader from '../Loader';
 import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
@@ -74,7 +75,7 @@ class App extends Component {
   };
 
   renderList = () => {
-    const { tasks, UIState, activeTasks, finishedTasks } = this.props;
+    const { tasks, UIState, activeTasks, finishedTasks, classes } = this.props;
     let actualTasks = [];
 
     switch (UIState.activeTaskTable) {
@@ -89,7 +90,15 @@ class App extends Component {
         break;
     }
 
-    return <List tasks={actualTasks} onRemove={this.removeTask} onChangeState={this.changedState}/>;
+    if (UIState.syncTasksState === 'request' && actualTasks.length === 0) {
+      return (
+        <div className={classes.loaderContainer}>
+          <Loader/>
+        </div>
+      );
+    } else {
+      return <List tasks={actualTasks} onRemove={this.removeTask} onChangeState={this.changedState}/>;
+    }
   }
 
   render() {

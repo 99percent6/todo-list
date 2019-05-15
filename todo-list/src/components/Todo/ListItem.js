@@ -51,9 +51,13 @@ const styles = theme => ({
     color: 'gray',
     textDecoration: 'line-through',
   },
-  avatarBackground: {
+  avatarRoot: {
+    minWidth: '40px',
+  },
+  avatar: {
     backgroundColor: 'white',
     height: '30px',
+    marginRight: 0,
   },
   input: {
     margin: '0',
@@ -153,8 +157,8 @@ class Item extends Component {
     const iconColor = isActiveState ? 'action' : 'disabled';
     const secondaryText = this.buildSecondaryTaskText(task);
     const avatar = (
-      <ListItemAvatar>
-        <Avatar className={classes.avatarBackground}>
+      <ListItemAvatar classes={{root: classes.avatarRoot}}>
+        <Avatar className={classes.avatar}>
           <EventNote color={iconColor} />
         </Avatar>
       </ListItemAvatar>
