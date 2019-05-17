@@ -39,7 +39,7 @@ class TodoTabs extends Component {
 
   handleChange = (event, value) => {
     const { history } = this.props;
-    history.push({ pathname: `/todo/${value === 1 ? 'notes' : 'tasks'}` });
+    history.push({ pathname: `/todo/${value === 1 ? 'notes' : 'tasks/all'}` });
     this.setState({ value });
   };
 

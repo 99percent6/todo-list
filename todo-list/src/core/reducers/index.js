@@ -197,6 +197,30 @@ const feedback = handleActions({
   },
 }, { title: '', content: '', email: '' });
 
+const project = handleActions({
+  [actions.updProjectList](state, { payload: { list } }) {
+    return {
+      ...state,
+      list,
+    };
+  },
+  [actions.addProject](state, { payload: { project } }) {
+    let projectList = state.list;
+    projectList = { ...projectList, [project.id]: project };
+    return {
+      ...state,
+      name: '',
+      list: projectList,
+    };
+  },
+  [actions.updProjectName](state, { payload: { name } }) {
+    return {
+      ...state,
+      name,
+    };
+  },
+}, { list: {}, name: '' });
+
 export default combineReducers({
   addTask,
   tasks,
@@ -206,4 +230,5 @@ export default combineReducers({
   userRegistration,
   notifications,
   feedback,
+  project,
 });

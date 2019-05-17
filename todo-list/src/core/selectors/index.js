@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
 
 const getTasks = state => state.tasks;
+const getProjects = state => state.project.list;
 
 export const tasksSelector = createSelector(
   getTasks,
@@ -13,4 +14,9 @@ export const activeTasksSelector = createSelector(
 export const finishedTasksSelector = createSelector(
   tasksSelector,
   tasks => tasks.filter(t => t.state === 'finished'),
+);
+
+export const projectsSelector = createSelector(
+  getProjects,
+  projects => Object.values(projects),
 );

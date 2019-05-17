@@ -29,7 +29,7 @@ class AuthContainer extends Component {
     const { classes } = this.props;
     return (
       <div className={classes.container}>
-        <Button variant="outlined" color="primary" component={Link} to={{pathname: "/todo/tasks"}} className={classes.button}>
+        <Button variant="outlined" color="primary" component={Link} to={{pathname: "/todo/tasks/all"}} className={classes.button}>
           Начать действовать
         </Button>
       </div>

@@ -4,9 +4,10 @@ export default class db {
   constructor ({config, db}) {
     this.config = config;
     this.db = db;
-    this.usersCollectionName = 'users';
-    this.tasksCollectionName = 'todo-list';
-    this.feedbackCollectionName = 'feedback';
+    this.usersCollectionName = config.db.collectionName.users;
+    this.tasksCollectionName = config.db.collectionName.tasks;
+    this.feedbackCollectionName = config.db.collectionName.feedback;
+    this.projectCollectionName = config.db.collectionName.projects;
   };
 
   async findByField ({ field, operator = '==', value, collection, sort }) {
@@ -201,5 +202,43 @@ export default class db {
       console.error(error);
       return { code: 500, result: error };
     }
-  }
+  };
+
+  async createProject ({ project }) {
+    if (!project) {
+      console.error('Missing required fields');
+      return { code: 404, result: 'Missing required fields' };
+    }
+    try {
+      const result = await this.db.collection(this.projectCollectionName).add(project);
+      if (result) {
+        return { code: 200, result: result.id };
+      } else {
+        return { code: 500, result: "Project doesn't create" };
+      }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async getProjects ({ userId }) {
+    if (!userId) {
+      console.error('User id is required field');
+      return { code: 404, result: 'User id is required field' };
+    }
+    try {
+      const result = await this.findByField({ field: 'author', value: userId, collection: this.projectCollectionName });
+      if (result && result.code === 200 && result.result.length) {
+        return result;
+      } else if (result && result.code === 404) {
+        return { code: 200, result: [] };
+      } else {
+        return { code: result.code, result: [] };
+      }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
 }

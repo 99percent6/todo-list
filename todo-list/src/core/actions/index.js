@@ -33,6 +33,9 @@ export const updFeedbackTitle = createAction('UPD_FEEDBACK_TITLE');
 export const updFeedbackContent = createAction('UPD_FEEDBACK_CONTENT');
 export const updFeedbackEmail = createAction('UPD_FEEDBACK_EMAIL');
 export const updFeedbackAllFields = createAction('UPD_FEEDBACK_ALL_FIELDS');
+export const updProjectList = createAction('UPD_PROJECT_LIST');
+export const updProjectName = createAction('UPD_PROJECT_NAME');
+export const addProject = createAction('ADD_PROJECT');
 
 export const syncTasks = ({ token }) => async(dispatch) => {
     if (!token) {
@@ -40,22 +43,22 @@ export const syncTasks = ({ token }) => async(dispatch) => {
         throw new Error('Token is required field');
     }
     try {
-				const url = `${apiHost}/tasks/list`;
-				dispatch(setSyncTasksState({ syncTasksState: 'request' }));
+        const url = `${apiHost}/tasks/list`;
+        dispatch(setSyncTasksState({ syncTasksState: 'request' }));
         const result = await queryHandler({ url, method: 'GET' });
         if (result && result.code === 200) {
             let objList = {};
             result.result.forEach(task => {
                 objList = { ...objList, [task.id]: task };
-						})
-						dispatch(setSyncTasksState({ syncTasksState: 'success' }));
+            })
+            dispatch(setSyncTasksState({ syncTasksState: 'success' }));
             dispatch(replaceTasks({ tasks: objList }));
         } else {
-						dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
-						dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка задач, попробуйте перелогиниться.', type: 'error' }));
-				}
+            dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
+            dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка задач, попробуйте перелогиниться.', type: 'error' }));
+        }
     } catch (error) {
-				dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
+        dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         console.error(error);
     }
 }
@@ -195,6 +198,41 @@ export const sendFeedback = ({ data }) => async(dispatch) => {
         const url = `${apiHost}/user/sendFeedback`;
         const result = await queryHandler({ url, method: 'POST', body: data });
         dispatch(updFeedbackAllFields({ title: '', content: '', email: '' }));
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const getProjects = ({ token }) => async(dispatch) => {
+    if (!token) {
+        throw new Error('Token is required field');
+    }
+    try {
+        const url = `${apiHost}/projects/list`;
+        const result = await queryHandler({ url, method: 'GET' });
+        if (result && result.code === 200) {
+            let objList = {};
+            result.result.forEach(project => {
+                objList = { ...objList, [project.id]: project };
+            })
+            dispatch(updProjectList({ list: objList }));
+        } else {
+            dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка проектов.', type: 'error' }));
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const createProject = ({ project }) => async(dispatch) => {
+    if (!project) {
+        throw new Error('Missing required fields');
+    }
+    try {
+        dispatch(addProject({ project }));
+        const url = `${apiHost}/projects/create`;
+        const result = await queryHandler({ url, method: 'POST', body: { name: project.name } });
         return result;
     } catch (error) {
         console.error(error);

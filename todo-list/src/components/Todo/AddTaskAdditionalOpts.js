@@ -18,9 +18,6 @@ const styles = theme => ({
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
-  primary: {
-    marginLeft: '15px',
-  }
 });
 
 class AddTaskAdditionalOpts extends Component {

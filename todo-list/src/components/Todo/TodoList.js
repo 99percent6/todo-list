@@ -7,6 +7,7 @@ import AddTask from './AddTask';
 import ListStateTabs from './ListStateTabs';
 import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../../core/selectors';
 import Loader from '../Loader';
+import Projects from './projects/Projects';
 import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
@@ -30,6 +31,7 @@ const actionCreators = {
   asyncDeleteTask: actions.asyncDeleteTask,
   asyncUpdateTask: actions.asyncUpdateTask,
   syncTasks: actions.syncTasks,
+  getProjects: actions.getProjects,
 };
 
 const styles = theme => ({
@@ -48,9 +50,10 @@ const styles = theme => ({
 
 class App extends Component {
   componentDidMount () {
-    const { syncTasks, token } = this.props;
+    const { syncTasks, getProjects, token } = this.props;
     if (token) {
       syncTasks({ token });
+      getProjects({ token });
     }
   };
 
@@ -105,6 +108,7 @@ class App extends Component {
     return (
       <div>
         <div>
+          <Projects/>
           <AddTask/>
         </div>
         <ListStateTabs/>
