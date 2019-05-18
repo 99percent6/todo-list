@@ -6,6 +6,7 @@ import AddProjectDialog from './AddProjectDialog';
 import ProjectList from './ProjectList';
 import * as actions from '../../../core/actions';
 import { uniqueId } from 'lodash';
+import { slugify } from '../../../helpers';
 
 const mapStateToProps = (state) => {
   const { project, user } = state;
@@ -19,6 +20,8 @@ const mapStateToProps = (state) => {
 
 const actionCreators = {
   createProject: actions.createProject,
+  asyncDeleteProject: actions.asyncDeleteProject,
+  getProjects: actions.getProjects,
 };
 
 const styles = theme => ({
@@ -48,9 +51,19 @@ class Projects extends Component {
     const project = {
       name: projectName,
       id: uniqueId(),
+      slug: slugify(projectName),
     };
     createProject({ project });
     this.closeDialog();
+  };
+
+  deleteProject = (id) => {
+    const { asyncDeleteProject, getProjects, token } = this.props;
+    asyncDeleteProject({ id }).then(res => {
+      if (token) {
+        getProjects({ token });
+      }
+    });
   };
 
   render() {
@@ -60,8 +73,12 @@ class Projects extends Component {
     return (
       <div className={classes.root}>
         <AddProjectBtn openDialog={this.openDialog}/>
-        <ProjectList/>
-        <AddProjectDialog open={isVisibleDialog} onSaveProject={this.createProject} onCloseDialog={this.closeDialog}/>
+        <ProjectList onDeleteProject={this.deleteProject}/>
+        <AddProjectDialog
+          open={isVisibleDialog}
+          onSaveProject={this.createProject}
+          onCloseDialog={this.closeDialog}
+        />
       </div>
     );
   };

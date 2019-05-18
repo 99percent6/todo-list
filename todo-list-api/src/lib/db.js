@@ -37,6 +37,19 @@ export default class db {
     }
   };
 
+  async deleteById ({ id, collection = '' }) {
+    if (!id || !collection) {
+      return { code: 404, result: 'Missing field or value' };
+    }
+    try {
+      const result = await this.db.collection(collection).doc(id).delete();
+      return { code: 200, result: 'OK' };
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
   async registerUser (user) {
     if (!user.login || !user.password) {
       console.error('Login or password is missing during registration');
@@ -164,8 +177,8 @@ export default class db {
       return { code: 404, result: 'Task id is required field' };
     }
     try {
-      const result = await this.db.collection(this.tasksCollectionName).doc(id).delete();
-      return { code: 200, result: 'OK' };
+      const result = await this.deleteById({ id, collection: this.tasksCollectionName });
+      return result;
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
@@ -236,6 +249,20 @@ export default class db {
       } else {
         return { code: result.code, result: [] };
       }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async deleteProject ({ id }) {
+    if (!id) {
+      console.error('Project id is required field');
+      return { code: 404, result: 'Project id is required field' };
+    }
+    try {
+      const result = await this.deleteById({ id, collection: this.projectCollectionName });
+      return result;
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };

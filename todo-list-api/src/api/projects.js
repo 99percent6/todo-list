@@ -29,7 +29,7 @@ export default ({ config, db }) => {
   });
 
   api.post('/create', async function (req, res) {
-    const token = req.query.token;
+    const { token } = req.query;
     let project = req.body;
     if (!token || !project) {
       return res.send({ result: 'Missing required fields', code: 500 }).status(500);
@@ -39,6 +39,25 @@ export default ({ config, db }) => {
       if (user) {
         project = { ...project, author: user.id };
         const result = await database.createProject({ project });
+        return res.send(result).status(result.code);
+      } else {
+        return res.send({ result: 'User is not authorized', code: 401 }).status(401);
+      }
+    } catch (error) {
+      console.error(error);
+      return res.send({ result: 'Internal error', code: 500 }).status(500);
+    }
+  });
+
+  api.delete('/delete', async function (req, res) {
+    const { token, id } = req.query;
+    if (!token || !id) {
+      return res.send({ result: 'Missing required fields', code: 500 }).status(500);
+    }
+    try {
+      const user = await redisClient.get(token);
+      if (user) {
+        const result = await database.deleteProject({ id });
         return res.send(result).status(result.code);
       } else {
         return res.send({ result: 'User is not authorized', code: 401 }).status(401);

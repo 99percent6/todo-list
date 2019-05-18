@@ -213,6 +213,12 @@ const project = handleActions({
       list: projectList,
     };
   },
+  [actions.deleteProject](state, { payload: { id } }) {
+    return {
+      ...state,
+      list: omit(state.list, [id]),
+    };
+  },
   [actions.updProjectName](state, { payload: { name } }) {
     return {
       ...state,

@@ -36,6 +36,7 @@ export const updFeedbackAllFields = createAction('UPD_FEEDBACK_ALL_FIELDS');
 export const updProjectList = createAction('UPD_PROJECT_LIST');
 export const updProjectName = createAction('UPD_PROJECT_NAME');
 export const addProject = createAction('ADD_PROJECT');
+export const deleteProject = createAction('DELETE_PROJECT');
 
 export const syncTasks = ({ token }) => async(dispatch) => {
     if (!token) {
@@ -233,6 +234,20 @@ export const createProject = ({ project }) => async(dispatch) => {
         dispatch(addProject({ project }));
         const url = `${apiHost}/projects/create`;
         const result = await queryHandler({ url, method: 'POST', body: { name: project.name } });
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const asyncDeleteProject = ({ id }) => async(dispatch) => {
+    if (!id) {
+        throw new Error('Missing required fields');
+    }
+    try {
+        dispatch(deleteProject({ id }));
+        const url = `${apiHost}/projects/delete?id=${id}`;
+        const result = await queryHandler({ url, method: 'DELETE' });
         return result;
     } catch (error) {
         console.error(error);
