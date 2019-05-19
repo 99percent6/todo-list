@@ -9,7 +9,7 @@ export default ({ config, db }) => {
   const database = new Database({ config, db });
 
   api.get('/list', async function (req, res) {
-    const token = req.query.token;
+    const { token, field, value } = req.query;
     if (!token) {
       return res.send({ result: 'Token is required field', code: 500 }).status(500);
     }
@@ -17,7 +17,12 @@ export default ({ config, db }) => {
       const user = await redisClient.get(token);
       if (user) {
         const userId = user.id;
-        const result = await database.getTasks({ userId });
+        let result;
+        if (field && value) {
+          result = await database.getTasks({ value, field });
+        } else {
+          result = await database.getTasks({ value: userId });
+        }
         if (result && result.code === 200) {
           return res.send(result).status(result.code);
         } else {
@@ -41,7 +46,7 @@ export default ({ config, db }) => {
     try {
       const user = await redisClient.get(token);
       if (user) {
-        task = { ...task, author: user.id };
+        task = { ...task, author: user.id, createdAt: Date.now() };
         const result = await database.addTask({ task });
         return res.send(result).status(result.code);
       } else {

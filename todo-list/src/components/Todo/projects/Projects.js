@@ -47,13 +47,17 @@ class Projects extends Component {
   };
 
   createProject = () => {
-    const { projectName, createProject } = this.props;
+    const { projectName, createProject, token, getProjects } = this.props;
     const project = {
       name: projectName,
       id: uniqueId(),
       slug: slugify(projectName),
     };
-    createProject({ project });
+    createProject({ project }).then(res => {
+      if (token) {
+        getProjects({ token });
+      }
+    });
     this.closeDialog();
   };
 

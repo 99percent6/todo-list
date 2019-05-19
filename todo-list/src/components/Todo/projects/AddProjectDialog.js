@@ -40,7 +40,7 @@ class AddProjectDialog extends Component {
           <DialogTitle id="max-width-dialog-title" className={classes.title}>Добавить проект</DialogTitle>
           <DialogContent>
             <div className="options-container">
-              <AddProjectInputName/>
+              <AddProjectInputName onSaveProject={onSaveProject}/>
             </div>
           </DialogContent>
           <DialogActions>

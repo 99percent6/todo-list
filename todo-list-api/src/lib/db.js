@@ -132,14 +132,14 @@ export default class db {
     }
   };
 
-  async getTasks ({ userId }) {
-    if (!userId) {
-      console.error('User id is required field');
-      return { code: 404, result: 'User id is required field' };
+  async getTasks ({ value, field = 'author' }) {
+    if (!value) {
+      console.error('Value is required field');
+      return { code: 404, result: 'Value is required field' };
     }
     try {
       const sort = { field: 'createdAt', value: 'desc' };
-      const result = await this.findByField({ field: 'author', value: userId, collection: this.tasksCollectionName, sort });
+      const result = await this.findByField({ field, value, collection: this.tasksCollectionName, sort });
       if (result && result.code === 200 && result.result.length) {
         return result;
       } else if (result && result.code === 404) {
@@ -241,7 +241,8 @@ export default class db {
       return { code: 404, result: 'User id is required field' };
     }
     try {
-      const result = await this.findByField({ field: 'author', value: userId, collection: this.projectCollectionName });
+      const sort = { field: 'createdAt', value: 'desc' };
+      const result = await this.findByField({ field: 'author', value: userId, collection: this.projectCollectionName, sort });
       if (result && result.code === 200 && result.result.length) {
         return result;
       } else if (result && result.code === 404) {

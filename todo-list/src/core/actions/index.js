@@ -19,6 +19,7 @@ export const updText = createAction('UPD_TEXT');
 export const updEditValue = createAction('UPD_NEW_VALUE');
 export const updPriorityTask = createAction('UPD_PRIORITY_TASK');
 export const updPeriodOfExecution = createAction('UPD_PERIOD_OF_EXECUTION');
+export const updProjectTask = createAction('UPD_PROJECT_TASK');
 export const addTask = createAction('ADD_TASK');
 export const delTask = createAction('DEL_TASK');
 export const updTask = createAction('UPD_TASK');
@@ -38,13 +39,16 @@ export const updProjectName = createAction('UPD_PROJECT_NAME');
 export const addProject = createAction('ADD_PROJECT');
 export const deleteProject = createAction('DELETE_PROJECT');
 
-export const syncTasks = ({ token }) => async(dispatch) => {
+export const syncTasks = ({ token, field = '', value = '' }) => async(dispatch) => {
     if (!token) {
         dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         throw new Error('Token is required field');
     }
     try {
-        const url = `${apiHost}/tasks/list`;
+        let url = `${apiHost}/tasks/list`;
+        if (field && value) {
+            url += `?field=${field}&value=${value}`;
+        }
         dispatch(setSyncTasksState({ syncTasksState: 'request' }));
         const result = await queryHandler({ url, method: 'GET' });
         if (result && result.code === 200) {
@@ -221,6 +225,7 @@ export const getProjects = ({ token }) => async(dispatch) => {
         } else {
             dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка проектов.', type: 'error' }));
         }
+        return result;
     } catch (error) {
         console.error(error);
     }
@@ -233,7 +238,7 @@ export const createProject = ({ project }) => async(dispatch) => {
     try {
         dispatch(addProject({ project }));
         const url = `${apiHost}/projects/create`;
-        const result = await queryHandler({ url, method: 'POST', body: { name: project.name } });
+        const result = await queryHandler({ url, method: 'POST', body: { ...project } });
         return result;
     } catch (error) {
         console.error(error);

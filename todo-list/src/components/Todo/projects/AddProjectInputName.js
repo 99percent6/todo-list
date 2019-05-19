@@ -30,6 +30,14 @@ const styles = theme => ({
 });
 
 class AddProjectInputLabel extends Component {
+  handleKeyPress = (e) => {
+    const event = e;
+    const { onSaveProject } = this.props;
+    if (event.key === 'Enter') {
+      onSaveProject();
+    }
+  };
+
   handleChange = (event) => {
     const { value } = event.target;
     const { updProjectName } = this.props;
@@ -47,6 +55,7 @@ class AddProjectInputLabel extends Component {
           type='text'
           value={projectName}
           onChange={this.handleChange}
+          onKeyPress={this.handleKeyPress}
         />
       </FormControl>
     );

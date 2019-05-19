@@ -52,7 +52,7 @@ class PeriodOfExecution extends Component {
 
     return (
       <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-        <Grid container className="period-of-execution" justify="flex-start">
+        <Grid container className="additional-options" justify="flex-start">
           <ThemeProvider theme={materialTheme}>
             <DateTimePicker
               clearable

@@ -37,7 +37,7 @@ export default ({ config, db }) => {
     try {
       const user = await redisClient.get(token);
       if (user) {
-        project = { ...project, author: user.id };
+        project = { ...project, author: user.id, createdAt: Date.now() };
         const result = await database.createProject({ project });
         return res.send(result).status(result.code);
       } else {

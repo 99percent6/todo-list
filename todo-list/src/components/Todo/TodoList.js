@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import * as actions from '../../core/actions';
@@ -50,10 +51,20 @@ const styles = theme => ({
 
 class App extends Component {
   componentDidMount () {
-    const { syncTasks, getProjects, token } = this.props;
+    const { syncTasks, getProjects, token, match } = this.props;
     if (token) {
-      syncTasks({ token });
-      getProjects({ token });
+      getProjects({ token }).then(res => {
+        if (res.code === 200 && match && match.params && match.params.project !== 'all') {
+          const currentProject = res.result && res.result.length && res.result.find(project => project.slug === match.params.project);
+          if (currentProject && currentProject.id) {
+            syncTasks({ token, field: 'project.id', value: currentProject.id });
+          } else {
+            syncTasks({ token });
+          }
+        } else {
+          syncTasks({ token });
+        }
+      });
     }
   };
 
@@ -118,4 +129,4 @@ class App extends Component {
   };
 }
 
-export default connect(mapStateToProps, actionCreators)(withStyles(styles)(App));
+export default withRouter(connect(mapStateToProps, actionCreators)(withStyles(styles)(App)));

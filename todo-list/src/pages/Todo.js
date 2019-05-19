@@ -33,7 +33,7 @@ class TodoTabs extends Component {
       history.replace('/');
     }
     if (!routeType || !this.state.allowRouteTypes.includes(routeType)) {
-      history.replace('/todo/tasks');
+      history.replace('/todo/tasks/all');
     }
   };
 

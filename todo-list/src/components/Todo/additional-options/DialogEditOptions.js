@@ -8,6 +8,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Priority from './Priority';
 import TaskLabelEdit from './TaskLabelEdit';
 import PeriodOfExecution from './PeriodOfExecution';
+import Project from './Project';
 import '../../../css/components/todoList/base.scss';
 
 const styles = theme => ({
@@ -46,6 +47,7 @@ class DialogEditOptions extends Component {
             <div className="options-container">
               <Priority/>
               <PeriodOfExecution/>
+              <Project/>
             </div>
           </DialogContent>
           <DialogActions>
