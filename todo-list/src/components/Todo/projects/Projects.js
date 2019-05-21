@@ -7,6 +7,9 @@ import ProjectList from './ProjectList';
 import * as actions from '../../../core/actions';
 import { uniqueId } from 'lodash';
 import { slugify } from '../../../helpers';
+import { withSyncTask } from '../../../core/hoc/withSyncTask';
+
+const ProjectListWithSyncTask = withSyncTask(ProjectList);
 
 const mapStateToProps = (state) => {
   const { project, user } = state;
@@ -77,7 +80,7 @@ class Projects extends Component {
     return (
       <div className={classes.root}>
         <AddProjectBtn openDialog={this.openDialog}/>
-        <ProjectList onDeleteProject={this.deleteProject}/>
+        <ProjectListWithSyncTask onDeleteProject={this.deleteProject}/>
         <AddProjectDialog
           open={isVisibleDialog}
           onSaveProject={this.createProject}

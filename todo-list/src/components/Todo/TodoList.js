@@ -10,6 +10,9 @@ import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../..
 import Loader from '../Loader';
 import Projects from './projects/Projects';
 import '../../css/components/todoList/base.scss';
+import { withSyncTask } from '../../core/hoc/withSyncTask';
+
+const AddTaskWithSyncTask = withSyncTask(AddTask);
 
 const mapStateToProps = (state) => {
   const { text, UIState, user } = state;
@@ -31,7 +34,6 @@ const actionCreators = {
   replaceTasks: actions.replaceTasks,
   asyncDeleteTask: actions.asyncDeleteTask,
   asyncUpdateTask: actions.asyncUpdateTask,
-  syncTasks: actions.syncTasks,
   getProjects: actions.getProjects,
 };
 
@@ -51,40 +53,27 @@ const styles = theme => ({
 
 class App extends Component {
   componentDidMount () {
-    const { syncTasks, getProjects, token, match } = this.props;
+    const { getProjects, token, syncTasks } = this.props;
     if (token) {
       getProjects({ token }).then(res => {
-        if (res.code === 200 && match && match.params && match.params.project !== 'all') {
-          const currentProject = res.result && res.result.length && res.result.find(project => project.slug === match.params.project);
-          if (currentProject && currentProject.id) {
-            syncTasks({ token, field: 'project.id', value: currentProject.id });
-          } else {
-            syncTasks({ token });
-          }
-        } else {
-          syncTasks({ token });
-        }
+        syncTasks();
       });
     }
   };
 
   changedState = (task) => {
-    const { asyncUpdateTask, syncTasks, token } = this.props;
+    const { asyncUpdateTask, syncTasks } = this.props;
     const status = task.state === 'active' ? 'finished' : 'active';
     task = { ...task, state: status };
     asyncUpdateTask({task}).then(res => {
-      if (token) {
-        syncTasks({ token });
-      }
+      syncTasks();
     });
   };
 
   removeTask = (id) => {
-    const { asyncDeleteTask, syncTasks, token } = this.props;
+    const { asyncDeleteTask, syncTasks } = this.props;
     asyncDeleteTask({id}).then(res => {
-      if (token) {
-        syncTasks({ token });
-      }
+      syncTasks();
     });
   };
 
@@ -120,7 +109,7 @@ class App extends Component {
       <div>
         <div>
           <Projects/>
-          <AddTask/>
+          <AddTaskWithSyncTask/>
         </div>
         <ListStateTabs/>
         { this.renderList() }

@@ -6,7 +6,7 @@ import Chip from '@material-ui/core/Chip';
 import WorkIcon from '@material-ui/icons/WorkOutline';
 import { projectsSelector } from '../../../core/selectors';
 import DeleteProjectDialog from './DeleteProjectDialog';
-import * as actions from '../../../core/actions';
+// import * as actions from '../../../core/actions';
 
 const mapStateToProps = (state) => {
   const { user } = state;
@@ -18,7 +18,6 @@ const mapStateToProps = (state) => {
 };
 
 const actionCreators = {
-  syncTasks: actions.syncTasks,
 };
 
 const styles = () => ({
@@ -55,7 +54,7 @@ class ProjectList extends Component {
     this.setState({ activeProject: project.id });
     history.push({ pathname: `/todo/tasks/${project.slug}` });
     if (token) {
-      syncTasks({ token, field: 'project.id', value: project.id });
+      syncTasks(project.slug);
     }
   };
 
@@ -75,7 +74,7 @@ class ProjectList extends Component {
           <div key={project.id}>
             <Chip
               onClick={(e) => this.handleClick(e, project)}
-              onDelete={() => this.openDialog(project.id)}
+              onDelete={project.id === 'all' ? null : () => this.openDialog(project.id)}
               className={classes.chip}
               color="primary"
               label={project.name}

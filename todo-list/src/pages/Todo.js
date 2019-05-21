@@ -4,9 +4,12 @@ import SwipeableViews from 'react-swipeable-views';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Todo from '../components/Todo/TodoList';
+import TodoList from '../components/Todo/TodoList';
 import TabContainer from '../components/Tabs/TabContainer';
 import { getCookie } from '../core/lib/cookies';
+import { withSyncTask } from '../core/hoc/withSyncTask';
+
+const TodoWithSyncTask = withSyncTask(TodoList);
 
 const styles = theme => ({
   root: {
@@ -70,7 +73,7 @@ class TodoTabs extends Component {
           onChangeIndex={this.handleChangeIndex}
         >
           <TabContainer dir={theme.direction}>
-            <Todo />
+            <TodoWithSyncTask />
           </TabContainer>
           <TabContainer dir={theme.direction}>В разработке...</TabContainer>
         </SwipeableViews>

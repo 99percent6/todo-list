@@ -18,5 +18,13 @@ export const finishedTasksSelector = createSelector(
 
 export const projectsSelector = createSelector(
   getProjects,
-  projects => Object.values(projects),
+  projects => {
+    let projectList = Object.values(projects);
+    projectList.unshift({
+      id: 'all',
+      name: 'Все',
+      slug: 'all',
+    });
+    return projectList;
+  },
 );

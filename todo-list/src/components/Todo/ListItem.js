@@ -30,7 +30,6 @@ const mapStateToProps = (state) => {
 const actionCreators = {
   updEditValue: actions.updEditValue,
   asyncUpdateTask: actions.asyncUpdateTask,
-  syncTasks: actions.syncTasks,
   updPriorityTask: actions.updPriorityTask,
   updPeriodOfExecution: actions.updPeriodOfExecution,
   updProjectTask: actions.updProjectTask,
@@ -127,7 +126,7 @@ class Item extends Component {
     task = { ...task, text: textValue, priority, executionDate, project };
     asyncUpdateTask({task}).then(res => {
       if (token) {
-        syncTasks({ token });
+        syncTasks();
       }
     });
     this.closeDialog();

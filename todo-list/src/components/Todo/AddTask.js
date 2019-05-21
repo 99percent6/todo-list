@@ -25,7 +25,6 @@ const mapStateToProps = (state) => {
 const actionCreators = {
   updText: actions.updText,
   asyncAddTask: actions.asyncAddTask,
-  syncTasks: actions.syncTasks,
 };
 
 const styles = theme => ({
@@ -66,7 +65,7 @@ class AddTask extends Component {
     };
     asyncAddTask({ task, token }).then(res => {
       if (token) {
-        syncTasks({ token });
+        syncTasks();
       }
     });
   };
