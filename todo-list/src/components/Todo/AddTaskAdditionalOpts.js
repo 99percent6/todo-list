@@ -14,6 +14,8 @@ const styles = theme => ({
   root: {
     width: '100%',
     marginBottom: '20px',
+    padding: '0 10px',
+    boxSizing: 'border-box',
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),

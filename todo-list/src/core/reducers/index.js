@@ -93,7 +93,20 @@ const UIState = handleActions({
       isVisibleSidebar,
     } ;
   },
-}, { activeTaskTable: 'active', authUserState: 'none', registrationUserState: 'none', syncTasksState: 'none', isVisibleSidebar: false });
+  [actions.setSyncProjectsState](state, { payload: { syncProjectsState } }) {
+    return {
+      ...state,
+      syncProjectsState,
+    }
+  },
+}, {
+  activeTaskTable: 'active',
+  authUserState: 'none',
+  registrationUserState: 'none',
+  syncTasksState: 'none',
+  isVisibleSidebar: false,
+  syncProjectsState: 'none',
+});
 
 const user = handleActions({
   [actions.updUserToken](state, { payload: { token } }) {

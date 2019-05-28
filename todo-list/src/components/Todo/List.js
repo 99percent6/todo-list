@@ -21,7 +21,7 @@ class TodoList extends Component {
     if (!tasks || tasks.length === 0) {
       return (
         <div className={classes.textContainer}>
-          У вас пока нет ни одной записи, поробуйте это сделать!
+          Пока нет ни одной записи, поробуйте это сделать!
         </div>
       );
     } else {

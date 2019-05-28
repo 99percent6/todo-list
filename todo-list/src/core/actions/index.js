@@ -38,6 +38,7 @@ export const updProjectList = createAction('UPD_PROJECT_LIST');
 export const updProjectName = createAction('UPD_PROJECT_NAME');
 export const addProject = createAction('ADD_PROJECT');
 export const deleteProject = createAction('DELETE_PROJECT');
+export const setSyncProjectsState = createAction('SET_SYNC_PROJECTS_STATE');
 
 export const syncTasks = ({ token, field = '', value = '' }) => async(dispatch) => {
     if (!token) {
@@ -89,10 +90,23 @@ export const asyncDeleteTask = ({ id }) => async(dispatch) => {
     try {
         dispatch(delTask({ id }));
         const url = `${apiHost}/tasks/deleteTask`;
-        const result = await queryHandler({ url, method: 'POST', body: { id } });
+        const result = await queryHandler({ url, method: 'DELETE', body: { id } });
         return result;
     } catch (error) {
         console.error('Error at deleting task: ', error);
+    }
+};
+
+export const asyncDeleteTasksByProject = ({ projectId }) => async(dispatch) => {
+    if (!projectId) {
+        throw new Error('Project id is required field');
+    }
+    try {
+        const url = `${apiHost}/tasks/deleteByProjectId?projectId=${projectId}`;
+        const result = await queryHandler({ url, method: 'DELETE' });
+        return result;
+    } catch (error) {
+        console.error('Error at deleting tasks: ', error);
     }
 };
 
@@ -211,22 +225,27 @@ export const sendFeedback = ({ data }) => async(dispatch) => {
 
 export const getProjects = ({ token }) => async(dispatch) => {
     if (!token) {
+        dispatch(setSyncProjectsState({ syncProjectsState: 'error' }));
         throw new Error('Token is required field');
     }
     try {
         const url = `${apiHost}/projects/list`;
+        dispatch(setSyncProjectsState({ syncProjectsState: 'request' }));
         const result = await queryHandler({ url, method: 'GET' });
         if (result && result.code === 200) {
             let objList = {};
             result.result.forEach(project => {
                 objList = { ...objList, [project.id]: project };
             })
+            dispatch(setSyncProjectsState({ syncProjectsState: 'success' }));
             dispatch(updProjectList({ list: objList }));
         } else {
+            dispatch(setSyncProjectsState({ syncProjectsState: 'error' }));
             dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка проектов.', type: 'error' }));
         }
         return result;
     } catch (error) {
+        dispatch(setSyncProjectsState({ syncProjectsState: 'error' }));
         console.error(error);
     }
 };

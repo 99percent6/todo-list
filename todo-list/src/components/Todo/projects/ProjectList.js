@@ -6,7 +6,7 @@ import Chip from '@material-ui/core/Chip';
 import WorkIcon from '@material-ui/icons/WorkOutline';
 import { projectsSelector } from '../../../core/selectors';
 import DeleteProjectDialog from './DeleteProjectDialog';
-// import * as actions from '../../../core/actions';
+import * as actions from '../../../core/actions';
 
 const mapStateToProps = (state) => {
   const { user } = state;
@@ -18,6 +18,7 @@ const mapStateToProps = (state) => {
 };
 
 const actionCreators = {
+  replaceTasks: actions.replaceTasks,
 };
 
 const styles = () => ({
@@ -40,6 +41,20 @@ class ProjectList extends Component {
     idVisibleDialog: null,
   };
 
+  componentDidUpdate() {
+    const { activeProject } = this.state;
+    const { projectList, match } = this.props;
+    if (projectList && projectList.length && match && match.params && !activeProject) {
+      const slug = match.params.project;
+      const currentProject = projectList.find(project => project.slug === slug);
+      if (currentProject) {
+        this.setState({
+          activeProject: currentProject.id,
+        });
+      }
+    }
+  };
+
   openDialog = (id) => {
     this.setState({ idVisibleDialog: id });
   };
@@ -50,9 +65,10 @@ class ProjectList extends Component {
 
   handleClick = (e, project) => {
     e.preventDefault();
-    const { history, syncTasks, token } = this.props;
+    const { history, syncTasks, token, replaceTasks } = this.props;
     this.setState({ activeProject: project.id });
     history.push({ pathname: `/todo/tasks/${project.slug}` });
+    replaceTasks({ tasks: {} })
     if (token) {
       syncTasks(project.slug);
     }

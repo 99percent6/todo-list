@@ -32,7 +32,7 @@ const styles = theme => ({
 class SelectProject extends Component {
   renderMenuItem = () => {
     const { projectList } = this.props;
-    return projectList.map(item => {
+    return projectList.filter(item => item.slug !== 'all').map(item => {
       return (
         <MenuItem key={item.id} value={item}>
           {item.name}

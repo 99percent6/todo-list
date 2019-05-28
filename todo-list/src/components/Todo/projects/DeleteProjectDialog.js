@@ -39,7 +39,7 @@ class DeleteProjectDialog extends Component {
           <DialogTitle id="max-width-dialog-title" className={classes.title}>{projectName}</DialogTitle>
           <DialogContent>
             <div className="options-container">
-              Вы уверены, что хотите удалить проект?
+              Вы уверены, что хотите удалить проект и все связанные с ним задачи?
             </div>
           </DialogContent>
           <DialogActions>
