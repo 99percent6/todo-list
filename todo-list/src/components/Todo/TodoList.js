@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import * as actions from '../../core/actions';
@@ -7,7 +8,11 @@ import AddTask from './AddTask';
 import ListStateTabs from './ListStateTabs';
 import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../../core/selectors';
 import Loader from '../Loader';
+import Projects from './projects/Projects';
 import '../../css/components/todoList/base.scss';
+import { withSyncTask } from '../../core/hoc/withSyncTask';
+
+const AddTaskWithSyncTask = withSyncTask(AddTask);
 
 const mapStateToProps = (state) => {
   const { text, UIState, user } = state;
@@ -29,7 +34,7 @@ const actionCreators = {
   replaceTasks: actions.replaceTasks,
   asyncDeleteTask: actions.asyncDeleteTask,
   asyncUpdateTask: actions.asyncUpdateTask,
-  syncTasks: actions.syncTasks,
+  getProjects: actions.getProjects,
 };
 
 const styles = theme => ({
@@ -48,29 +53,27 @@ const styles = theme => ({
 
 class App extends Component {
   componentDidMount () {
-    const { syncTasks, token } = this.props;
+    const { getProjects, token, syncTasks } = this.props;
     if (token) {
-      syncTasks({ token });
+      getProjects({ token }).then(res => {
+        syncTasks();
+      });
     }
   };
 
   changedState = (task) => {
-    const { asyncUpdateTask, syncTasks, token } = this.props;
+    const { asyncUpdateTask, syncTasks } = this.props;
     const status = task.state === 'active' ? 'finished' : 'active';
     task = { ...task, state: status };
     asyncUpdateTask({task}).then(res => {
-      if (token) {
-        syncTasks({ token });
-      }
+      syncTasks();
     });
   };
 
   removeTask = (id) => {
-    const { asyncDeleteTask, syncTasks, token } = this.props;
+    const { asyncDeleteTask, syncTasks } = this.props;
     asyncDeleteTask({id}).then(res => {
-      if (token) {
-        syncTasks({ token });
-      }
+      syncTasks();
     });
   };
 
@@ -105,7 +108,8 @@ class App extends Component {
     return (
       <div>
         <div>
-          <AddTask/>
+          <Projects/>
+          <AddTaskWithSyncTask/>
         </div>
         <ListStateTabs/>
         { this.renderList() }
@@ -114,4 +118,4 @@ class App extends Component {
   };
 }
 
-export default connect(mapStateToProps, actionCreators)(withStyles(styles)(App));
+export default withRouter(connect(mapStateToProps, actionCreators)(withStyles(styles)(App)));

@@ -1,4 +1,5 @@
 import { getCookie } from './cookies';
+import parseUrl from 'url';
 
 export const queryHandler = async function ({ url, method, body }) {
   if (!url || !method) {
@@ -20,7 +21,9 @@ export const queryHandler = async function ({ url, method, body }) {
   
   const token = getCookie('token');
   if (token && !url.includes('token')) {
-    url += `?token=${token}`;
+    const parsedUrl = parseUrl.parse(url);
+    const symbol = parsedUrl.search ? '&' : '?';
+    url += `${symbol}token=${token}`;
   }
 
   try {

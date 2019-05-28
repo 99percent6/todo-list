@@ -5,11 +5,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Priority from './Priority';
-import TaskLabelEdit from './TaskLabelEdit';
-import PeriodOfExecution from './PeriodOfExecution';
-import Project from './Project';
-import '../../../css/components/todoList/base.scss';
+import AddProjectInputName from './AddProjectInputName';
 
 const styles = theme => ({
   paperFullWidth: {
@@ -20,14 +16,14 @@ const styles = theme => ({
   },
 });
 
-class DialogEditOptions extends Component {
+class AddProjectDialog extends Component {
   static defaultProps = {
     maxWidth: 'md',
     fullWidth: true,
   };
 
   render() {
-    const { maxWidth, fullWidth, open, onCloseDialog, onSaveTask, task, classes } = this.props;
+    const { classes, maxWidth, fullWidth, open, onCloseDialog, onSaveProject } = this.props;
 
     return (
       <React.Fragment>
@@ -41,17 +37,14 @@ class DialogEditOptions extends Component {
           onClose={onCloseDialog}
           aria-labelledby="max-width-dialog-title"
         >
-          <DialogTitle id="max-width-dialog-title" className={classes.title}>{ task.text }</DialogTitle>
+          <DialogTitle id="max-width-dialog-title" className={classes.title}>Добавить проект</DialogTitle>
           <DialogContent>
-            <TaskLabelEdit/>
             <div className="options-container">
-              <Priority/>
-              <PeriodOfExecution/>
-              <Project/>
+              <AddProjectInputName onSaveProject={onSaveProject}/>
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={onSaveTask} color="primary">
+            <Button onClick={onSaveProject} color="primary">
               Сохранить
             </Button>
             <Button onClick={onCloseDialog} color="secondary">
@@ -61,7 +54,7 @@ class DialogEditOptions extends Component {
         </Dialog>
       </React.Fragment>
     );
-  }
+  };
 }
 
-export default withStyles(styles)(DialogEditOptions);
+export default withStyles(styles)(AddProjectDialog);

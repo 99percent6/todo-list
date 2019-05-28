@@ -5,11 +5,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Priority from './Priority';
-import TaskLabelEdit from './TaskLabelEdit';
-import PeriodOfExecution from './PeriodOfExecution';
-import Project from './Project';
-import '../../../css/components/todoList/base.scss';
 
 const styles = theme => ({
   paperFullWidth: {
@@ -20,14 +15,14 @@ const styles = theme => ({
   },
 });
 
-class DialogEditOptions extends Component {
+class DeleteProjectDialog extends Component {
   static defaultProps = {
-    maxWidth: 'md',
+    maxWidth: 'sm',
     fullWidth: true,
   };
 
   render() {
-    const { maxWidth, fullWidth, open, onCloseDialog, onSaveTask, task, classes } = this.props;
+    const { classes, maxWidth, fullWidth, open, onCloseDialog, onDeleteProject, projectName } = this.props;
 
     return (
       <React.Fragment>
@@ -41,18 +36,15 @@ class DialogEditOptions extends Component {
           onClose={onCloseDialog}
           aria-labelledby="max-width-dialog-title"
         >
-          <DialogTitle id="max-width-dialog-title" className={classes.title}>{ task.text }</DialogTitle>
+          <DialogTitle id="max-width-dialog-title" className={classes.title}>{projectName}</DialogTitle>
           <DialogContent>
-            <TaskLabelEdit/>
             <div className="options-container">
-              <Priority/>
-              <PeriodOfExecution/>
-              <Project/>
+              Вы уверены, что хотите удалить проект и все связанные с ним задачи?
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={onSaveTask} color="primary">
-              Сохранить
+            <Button onClick={() => onDeleteProject()} color="primary">
+              Удалить
             </Button>
             <Button onClick={onCloseDialog} color="secondary">
               Закрыть
@@ -61,7 +53,7 @@ class DialogEditOptions extends Component {
         </Dialog>
       </React.Fragment>
     );
-  }
+  };
 }
 
-export default withStyles(styles)(DialogEditOptions);
+export default withStyles(styles)(DeleteProjectDialog);

@@ -4,9 +4,10 @@ export default class db {
   constructor ({config, db}) {
     this.config = config;
     this.db = db;
-    this.usersCollectionName = 'users';
-    this.tasksCollectionName = 'todo-list';
-    this.feedbackCollectionName = 'feedback';
+    this.usersCollectionName = config.db.collectionName.users;
+    this.tasksCollectionName = config.db.collectionName.tasks;
+    this.feedbackCollectionName = config.db.collectionName.feedback;
+    this.projectCollectionName = config.db.collectionName.projects;
   };
 
   async findByField ({ field, operator = '==', value, collection, sort }) {
@@ -30,6 +31,19 @@ export default class db {
       } else {
         return { code: 404, result: 'Not found' };
       }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async deleteById ({ id, collection = '' }) {
+    if (!id || !collection) {
+      return { code: 404, result: 'Missing field or value' };
+    }
+    try {
+      const result = await this.db.collection(collection).doc(id).delete();
+      return { code: 200, result: 'OK' };
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
@@ -118,14 +132,14 @@ export default class db {
     }
   };
 
-  async getTasks ({ userId }) {
-    if (!userId) {
-      console.error('User id is required field');
-      return { code: 404, result: 'User id is required field' };
+  async getTasks ({ value, field = 'author' }) {
+    if (!value) {
+      console.error('Value is required field');
+      return { code: 404, result: 'Value is required field' };
     }
     try {
       const sort = { field: 'createdAt', value: 'desc' };
-      const result = await this.findByField({ field: 'author', value: userId, collection: this.tasksCollectionName, sort });
+      const result = await this.findByField({ field, value, collection: this.tasksCollectionName, sort });
       if (result && result.code === 200 && result.result.length) {
         return result;
       } else if (result && result.code === 404) {
@@ -163,8 +177,8 @@ export default class db {
       return { code: 404, result: 'Task id is required field' };
     }
     try {
-      const result = await this.db.collection(this.tasksCollectionName).doc(id).delete();
-      return { code: 200, result: 'OK' };
+      const result = await this.deleteById({ id, collection: this.tasksCollectionName });
+      return result;
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
@@ -201,5 +215,58 @@ export default class db {
       console.error(error);
       return { code: 500, result: error };
     }
-  }
+  };
+
+  async createProject ({ project }) {
+    if (!project) {
+      console.error('Missing required fields');
+      return { code: 404, result: 'Missing required fields' };
+    }
+    try {
+      const result = await this.db.collection(this.projectCollectionName).add(project);
+      if (result) {
+        return { code: 200, result: result.id };
+      } else {
+        return { code: 500, result: "Project doesn't create" };
+      }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async getProjects ({ userId }) {
+    if (!userId) {
+      console.error('User id is required field');
+      return { code: 404, result: 'User id is required field' };
+    }
+    try {
+      const sort = { field: 'createdAt', value: 'desc' };
+      const result = await this.findByField({ field: 'author', value: userId, collection: this.projectCollectionName, sort });
+      if (result && result.code === 200 && result.result.length) {
+        return result;
+      } else if (result && result.code === 404) {
+        return { code: 200, result: [] };
+      } else {
+        return { code: result.code, result: [] };
+      }
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
+
+  async deleteProject ({ id }) {
+    if (!id) {
+      console.error('Project id is required field');
+      return { code: 404, result: 'Project id is required field' };
+    }
+    try {
+      const result = await this.deleteById({ id, collection: this.projectCollectionName });
+      return result;
+    } catch (error) {
+      console.error(error);
+      return { code: 500, result: error };
+    }
+  };
 }

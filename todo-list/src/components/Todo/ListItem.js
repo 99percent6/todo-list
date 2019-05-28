@@ -22,6 +22,7 @@ const mapStateToProps = (state) => {
     priority: addTask.priority,
     textValue: addTask.editValue,
     executionDate: addTask.executionDate,
+    project: addTask.project,
   };
   return props;
 };
@@ -29,9 +30,9 @@ const mapStateToProps = (state) => {
 const actionCreators = {
   updEditValue: actions.updEditValue,
   asyncUpdateTask: actions.asyncUpdateTask,
-  syncTasks: actions.syncTasks,
   updPriorityTask: actions.updPriorityTask,
   updPeriodOfExecution: actions.updPeriodOfExecution,
+  updProjectTask: actions.updProjectTask,
   setNotification: actions.setNotification,
 };
 
@@ -70,6 +71,12 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
   },
+  secondaryTextContainer: {
+    marginRight: '10px',
+  },
+  secondaryTextLabel: {
+    fontWeight: '500',
+  },
 });
 
 class Item extends Component {
@@ -93,49 +100,56 @@ class Item extends Component {
   };
 
   openDialog = () => {
-    const { updEditValue, updPriorityTask, updPeriodOfExecution, task } = this.props;
+    const { updEditValue, updPriorityTask, updPeriodOfExecution, updProjectTask, task } = this.props;
     updEditValue({ text: task.text });
     updPriorityTask({ priority: task.priority ? task.priority : '' });
     updPeriodOfExecution({ executionDate: task.executionDate ? task.executionDate : null });
+    updProjectTask({ project: task.project ? task.project : '' });
     this.setState({ isVisibleDialog: true });
   };
 
   closeDialog = () => {
-    const { updEditValue, updPriorityTask, updPeriodOfExecution } = this.props;
+    const { updEditValue, updPriorityTask, updPeriodOfExecution, updProjectTask } = this.props;
     updEditValue({ text: '' });
     updPriorityTask({ priority:  '' });
     updPeriodOfExecution({ executionDate: null });
+    updProjectTask({ project: '' });
     this.setState({ isVisibleDialog: false });
   }
 
   applyChanges = (task) => {
-    const { textValue, setNotification, asyncUpdateTask, token, syncTasks, priority, executionDate } = this.props;
+    const { textValue, setNotification, asyncUpdateTask, token, syncTasks, priority, executionDate, project } = this.props;
     if (!textValue || textValue === '') {
       setNotification({ open: true, message: 'Введите название задачи', type: 'error' });
       return;
     }
-    task = { ...task, text: textValue, priority, executionDate };
+    task = { ...task, text: textValue, priority, executionDate, project };
     asyncUpdateTask({task}).then(res => {
       if (token) {
-        syncTasks({ token });
+        syncTasks();
       }
     });
     this.closeDialog();
   };
 
   buildSecondaryTaskText = (task) => {
+    const { classes } = this.props;
     const secondaryData = [
       {
         label: 'Срок исполнения: ',
         value: task.executionDate ? <Date date={task.executionDate} /> : null,
+      },
+      {
+        label: 'Проект: ',
+        value: task.project && task.project.name ? task.project.name : null,
       },
     ];
 
     return secondaryData.map(item => {
       if (item.value) {
         return (
-          <span key={item.label}>
-            <span>{ item.label }</span>
+          <span className={classes.secondaryTextContainer} key={item.label}>
+            <span className={classes.secondaryTextLabel}>{ item.label }</span>
             { item.value }
           </span>
         );

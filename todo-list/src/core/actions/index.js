@@ -19,6 +19,7 @@ export const updText = createAction('UPD_TEXT');
 export const updEditValue = createAction('UPD_NEW_VALUE');
 export const updPriorityTask = createAction('UPD_PRIORITY_TASK');
 export const updPeriodOfExecution = createAction('UPD_PERIOD_OF_EXECUTION');
+export const updProjectTask = createAction('UPD_PROJECT_TASK');
 export const addTask = createAction('ADD_TASK');
 export const delTask = createAction('DEL_TASK');
 export const updTask = createAction('UPD_TASK');
@@ -33,29 +34,37 @@ export const updFeedbackTitle = createAction('UPD_FEEDBACK_TITLE');
 export const updFeedbackContent = createAction('UPD_FEEDBACK_CONTENT');
 export const updFeedbackEmail = createAction('UPD_FEEDBACK_EMAIL');
 export const updFeedbackAllFields = createAction('UPD_FEEDBACK_ALL_FIELDS');
+export const updProjectList = createAction('UPD_PROJECT_LIST');
+export const updProjectName = createAction('UPD_PROJECT_NAME');
+export const addProject = createAction('ADD_PROJECT');
+export const deleteProject = createAction('DELETE_PROJECT');
+export const setSyncProjectsState = createAction('SET_SYNC_PROJECTS_STATE');
 
-export const syncTasks = ({ token }) => async(dispatch) => {
+export const syncTasks = ({ token, field = '', value = '' }) => async(dispatch) => {
     if (!token) {
         dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         throw new Error('Token is required field');
     }
     try {
-				const url = `${apiHost}/tasks/list`;
-				dispatch(setSyncTasksState({ syncTasksState: 'request' }));
+        let url = `${apiHost}/tasks/list`;
+        if (field && value) {
+            url += `?field=${field}&value=${value}`;
+        }
+        dispatch(setSyncTasksState({ syncTasksState: 'request' }));
         const result = await queryHandler({ url, method: 'GET' });
         if (result && result.code === 200) {
             let objList = {};
             result.result.forEach(task => {
                 objList = { ...objList, [task.id]: task };
-						})
-						dispatch(setSyncTasksState({ syncTasksState: 'success' }));
+            })
+            dispatch(setSyncTasksState({ syncTasksState: 'success' }));
             dispatch(replaceTasks({ tasks: objList }));
         } else {
-						dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
-						dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка задач, попробуйте перелогиниться.', type: 'error' }));
-				}
+            dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
+            dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка задач, попробуйте перелогиниться.', type: 'error' }));
+        }
     } catch (error) {
-				dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
+        dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         console.error(error);
     }
 }
@@ -81,10 +90,23 @@ export const asyncDeleteTask = ({ id }) => async(dispatch) => {
     try {
         dispatch(delTask({ id }));
         const url = `${apiHost}/tasks/deleteTask`;
-        const result = await queryHandler({ url, method: 'POST', body: { id } });
+        const result = await queryHandler({ url, method: 'DELETE', body: { id } });
         return result;
     } catch (error) {
         console.error('Error at deleting task: ', error);
+    }
+};
+
+export const asyncDeleteTasksByProject = ({ projectId }) => async(dispatch) => {
+    if (!projectId) {
+        throw new Error('Project id is required field');
+    }
+    try {
+        const url = `${apiHost}/tasks/deleteByProjectId?projectId=${projectId}`;
+        const result = await queryHandler({ url, method: 'DELETE' });
+        return result;
+    } catch (error) {
+        console.error('Error at deleting tasks: ', error);
     }
 };
 
@@ -195,6 +217,61 @@ export const sendFeedback = ({ data }) => async(dispatch) => {
         const url = `${apiHost}/user/sendFeedback`;
         const result = await queryHandler({ url, method: 'POST', body: data });
         dispatch(updFeedbackAllFields({ title: '', content: '', email: '' }));
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const getProjects = ({ token }) => async(dispatch) => {
+    if (!token) {
+        dispatch(setSyncProjectsState({ syncProjectsState: 'error' }));
+        throw new Error('Token is required field');
+    }
+    try {
+        const url = `${apiHost}/projects/list`;
+        dispatch(setSyncProjectsState({ syncProjectsState: 'request' }));
+        const result = await queryHandler({ url, method: 'GET' });
+        if (result && result.code === 200) {
+            let objList = {};
+            result.result.forEach(project => {
+                objList = { ...objList, [project.id]: project };
+            })
+            dispatch(setSyncProjectsState({ syncProjectsState: 'success' }));
+            dispatch(updProjectList({ list: objList }));
+        } else {
+            dispatch(setSyncProjectsState({ syncProjectsState: 'error' }));
+            dispatch(setNotification({ open: true, message: 'Ошибка при загрузке списка проектов.', type: 'error' }));
+        }
+        return result;
+    } catch (error) {
+        dispatch(setSyncProjectsState({ syncProjectsState: 'error' }));
+        console.error(error);
+    }
+};
+
+export const createProject = ({ project }) => async(dispatch) => {
+    if (!project) {
+        throw new Error('Missing required fields');
+    }
+    try {
+        dispatch(addProject({ project }));
+        const url = `${apiHost}/projects/create`;
+        const result = await queryHandler({ url, method: 'POST', body: { ...project } });
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const asyncDeleteProject = ({ id }) => async(dispatch) => {
+    if (!id) {
+        throw new Error('Missing required fields');
+    }
+    try {
+        dispatch(deleteProject({ id }));
+        const url = `${apiHost}/projects/delete?id=${id}`;
+        const result = await queryHandler({ url, method: 'DELETE' });
         return result;
     } catch (error) {
         console.error(error);

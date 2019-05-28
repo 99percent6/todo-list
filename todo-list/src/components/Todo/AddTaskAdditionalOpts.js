@@ -7,20 +7,20 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Priority from './additional-options/Priority';
 import PeriodOfExecution from './additional-options/PeriodOfExecution';
+import Project from './additional-options/Project';
 import '../../css/components/todoList/base.scss';
 
 const styles = theme => ({
   root: {
     width: '100%',
     marginBottom: '20px',
+    padding: '0 10px',
+    boxSizing: 'border-box',
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
     fontWeight: theme.typography.fontWeightRegular,
   },
-  primary: {
-    marginLeft: '15px',
-  }
 });
 
 class AddTaskAdditionalOpts extends Component {
@@ -36,6 +36,7 @@ class AddTaskAdditionalOpts extends Component {
           <ExpansionPanelDetails className="options-container">
             <Priority/>
             <PeriodOfExecution/>
+            <Project/>
           </ExpansionPanelDetails>
         </ExpansionPanel>
       </div>

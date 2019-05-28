@@ -22,6 +22,7 @@ const addTask = handleActions({
       value: '',
       priority: '',
       executionDate: null,
+      project: '',
     };
   },
   [actions.updPriorityTask](state, { payload: { priority } }) {
@@ -36,7 +37,13 @@ const addTask = handleActions({
       executionDate,
     };
   },
-}, { value: '', editValue: '', priority: '', executionDate: null });
+  [actions.updProjectTask](state, { payload: { project } }) {
+    return {
+      ...state,
+      project,
+    };
+  },
+}, { value: '', editValue: '', priority: '', executionDate: null, project: '' });
 
 const tasks = handleActions({
   [actions.addTask](state, { payload: { task } }) {
@@ -86,7 +93,20 @@ const UIState = handleActions({
       isVisibleSidebar,
     } ;
   },
-}, { activeTaskTable: 'active', authUserState: 'none', registrationUserState: 'none', syncTasksState: 'none', isVisibleSidebar: false });
+  [actions.setSyncProjectsState](state, { payload: { syncProjectsState } }) {
+    return {
+      ...state,
+      syncProjectsState,
+    }
+  },
+}, {
+  activeTaskTable: 'active',
+  authUserState: 'none',
+  registrationUserState: 'none',
+  syncTasksState: 'none',
+  isVisibleSidebar: false,
+  syncProjectsState: 'none',
+});
 
 const user = handleActions({
   [actions.updUserToken](state, { payload: { token } }) {
@@ -197,6 +217,36 @@ const feedback = handleActions({
   },
 }, { title: '', content: '', email: '' });
 
+const project = handleActions({
+  [actions.updProjectList](state, { payload: { list } }) {
+    return {
+      ...state,
+      list,
+    };
+  },
+  [actions.addProject](state, { payload: { project } }) {
+    let projectList = state.list;
+    projectList = { ...projectList, [project.id]: project };
+    return {
+      ...state,
+      name: '',
+      list: projectList,
+    };
+  },
+  [actions.deleteProject](state, { payload: { id } }) {
+    return {
+      ...state,
+      list: omit(state.list, [id]),
+    };
+  },
+  [actions.updProjectName](state, { payload: { name } }) {
+    return {
+      ...state,
+      name,
+    };
+  },
+}, { list: {}, name: '' });
+
 export default combineReducers({
   addTask,
   tasks,
@@ -206,4 +256,5 @@ export default combineReducers({
   userRegistration,
   notifications,
   feedback,
+  project,
 });
