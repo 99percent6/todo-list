@@ -5,10 +5,7 @@
     "projectId": "",
     "databaseURL": "",
     "collectionName": {
-      "tasks": "",
-      "users": "",
-      "feedback": "",
-      "projects": ""
+      "tasks": ""
     },
     "secretKey": ""
   },
