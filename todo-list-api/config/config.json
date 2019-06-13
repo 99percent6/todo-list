@@ -5,12 +5,15 @@
     "projectId": "",
     "databaseURL": "",
     "collectionName": {
-      "tasks": ""
+      "tasks": "todo-list",
+      "users": "users",
+      "feedback": "feedback",
+      "projects": "projects"
     },
     "secretKey": ""
   },
   "redis": {
-    "host": "",
-    "port": ""
+    "host": "127.0.0.1",
+    "port": "6379"
   }
 }
