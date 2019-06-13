@@ -2,5 +2,5 @@
   "api": {
     "host": "http://127.0.0.1:8080/api"
   },
-  "secretKey": "n8gsdg8n2sm9335d"
+  "secretKey": ""
 }
