@@ -33,6 +33,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "rm -rf ./dist && webpack --mode production",
+    "build:old": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
