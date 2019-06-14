@@ -10,7 +10,7 @@ todo-list-api/node_modules
 /coverage
 
 # production
-todo-list/build
+# todo-list/build
 todo-list-api/build
 
 # misc
