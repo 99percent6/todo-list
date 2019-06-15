@@ -48,7 +48,7 @@ export default ({ config, db }) => {
         if (userPassword === password) {
           const token = tokgen.generate();
           if (redisClient.isConnected()) {
-            const expire = 60 * 60 * 24 * 30;
+            const expire = 1000 * 60 * 60 * 24 * 30;
             redisClient.set(token, user, expire);
           }
           return res.send({ result: token, code: result.code }).status(result.code);
