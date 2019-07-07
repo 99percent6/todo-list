@@ -25,9 +25,9 @@ class ListStateTabs extends Component {
   handleChange = (event, value) => {
     const { updActiveTaskTab } = this.props;
     const mapping = {
-      '0': 'active',
-      '1': 'finished',
-      '2': 'all',
+      0: 'active',
+      1: 'matrix',
+      2: 'finished'
     }
     this.setState({ value });
     updActiveTaskTab({ value: mapping[value] });
@@ -44,8 +44,8 @@ class ListStateTabs extends Component {
           textColor="secondary"
         >
           <Tab label="Активные" />
+          <Tab label="Матрица приоритетов" />
           <Tab label="Выполненные" />
-          <Tab label="Все" />
         </Tabs>
       </Paper>
     );

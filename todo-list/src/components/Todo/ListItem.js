@@ -5,36 +5,19 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import EventNote from '@material-ui/icons/EventNote';
-import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import { withStyles } from '@material-ui/core/styles';
-import * as actions from '../../core/actions';
 import { priorityList } from '../../helpers';
-import DialogEditOptions from '././additional-options/DialogEditOptions';
+import DialogEditOptions from './additional-options/DialogEditOptions';
 import ListItemActions from './ListItemActions';
 import Date from '../Date';
 import '../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
-  const { addTask, user } = state;
-  const props = {
-    token: user.token,
-    priority: addTask.priority,
-    textValue: addTask.editValue,
-    executionDate: addTask.executionDate,
-    project: addTask.project,
-  };
+  const props = {};
   return props;
 };
 
-const actionCreators = {
-  updEditValue: actions.updEditValue,
-  asyncUpdateTask: actions.asyncUpdateTask,
-  updPriorityTask: actions.updPriorityTask,
-  updPeriodOfExecution: actions.updPeriodOfExecution,
-  updProjectTask: actions.updProjectTask,
-  setNotification: actions.setNotification,
-};
+const actionCreators = {};
 
 const styles = theme => ({
   root: {
@@ -81,55 +64,7 @@ const styles = theme => ({
 
 class Item extends Component {
   state = {
-    isVisibleDialog: false,
     priorityList: priorityList(),
-    actions: [
-      {
-        label: 'Редактировать',
-        value: 'edit',
-        icon: <EditIcon/>,
-        action: () => this.openDialog(),
-      },
-      {
-        label: 'Удалить',
-        value: 'delete',
-        icon: <DeleteIcon/>,
-        action: () => this.props.onRemove(this.props.task.id),
-      },
-    ],
-  };
-
-  openDialog = () => {
-    const { updEditValue, updPriorityTask, updPeriodOfExecution, updProjectTask, task } = this.props;
-    updEditValue({ text: task.text });
-    updPriorityTask({ priority: task.priority ? task.priority : '' });
-    updPeriodOfExecution({ executionDate: task.executionDate ? task.executionDate : null });
-    updProjectTask({ project: task.project ? task.project : '' });
-    this.setState({ isVisibleDialog: true });
-  };
-
-  closeDialog = () => {
-    const { updEditValue, updPriorityTask, updPeriodOfExecution, updProjectTask } = this.props;
-    updEditValue({ text: '' });
-    updPriorityTask({ priority:  '' });
-    updPeriodOfExecution({ executionDate: null });
-    updProjectTask({ project: '' });
-    this.setState({ isVisibleDialog: false });
-  }
-
-  applyChanges = (task) => {
-    const { textValue, setNotification, asyncUpdateTask, token, syncTasks, priority, executionDate, project } = this.props;
-    if (!textValue || textValue === '') {
-      setNotification({ open: true, message: 'Введите название задачи', type: 'error' });
-      return;
-    }
-    task = { ...task, text: textValue, priority, executionDate, project };
-    asyncUpdateTask({task}).then(res => {
-      if (token) {
-        syncTasks();
-      }
-    });
-    this.closeDialog();
   };
 
   buildSecondaryTaskText = (task) => {
@@ -159,8 +94,8 @@ class Item extends Component {
     })
   };
 
-  renderIconGroup = (task) => {
-    const { actions } = this.state;
+  renderIconGroup = () => {
+    const { actions } = this.props;
     return <ListItemActions actions={actions}/>
   };
 
@@ -208,8 +143,7 @@ class Item extends Component {
   }
 
   render() {
-    const { task, classes } = this.props;
-    const { isVisibleDialog } = this.state;
+    const { task, classes, closeDialog, applyChanges, isVisibleDialog } = this.props;
 
     return (
       <div>
@@ -217,7 +151,7 @@ class Item extends Component {
           {this.renderContent()}
           {this.renderIconGroup(task)}
         </ListItem>
-        <DialogEditOptions open={isVisibleDialog} onCloseDialog={this.closeDialog} task={task} onSaveTask={() => this.applyChanges(task)}/>
+        <DialogEditOptions open={isVisibleDialog} onCloseDialog={closeDialog} task={task} onSaveTask={() => applyChanges(task)}/>
       </div>
     );
   };

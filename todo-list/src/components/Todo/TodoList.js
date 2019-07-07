@@ -9,6 +9,7 @@ import ListStateTabs from './ListStateTabs';
 import { tasksSelector, activeTasksSelector, finishedTasksSelector } from '../../core/selectors';
 import Loader from '../Loader';
 import Projects from './projects/Projects';
+import Matrix from './matrix/Matrix';
 import '../../css/components/todoList/base.scss';
 import { withSyncTask } from '../../core/hoc/withSyncTask';
 
@@ -32,7 +33,6 @@ const actionCreators = {
   delTask: actions.delTask,
   updTask: actions.updTask,
   replaceTasks: actions.replaceTasks,
-  asyncDeleteTask: actions.asyncDeleteTask,
   asyncUpdateTask: actions.asyncUpdateTask,
   getProjects: actions.getProjects,
 };
@@ -70,13 +70,6 @@ class App extends Component {
     });
   };
 
-  removeTask = (id) => {
-    const { asyncDeleteTask, syncTasks } = this.props;
-    asyncDeleteTask({id}).then(res => {
-      syncTasks();
-    });
-  };
-
   renderList = () => {
     const { tasks, UIState, activeTasks, finishedTasks, classes } = this.props;
     let actualTasks = [];
@@ -87,6 +80,9 @@ class App extends Component {
         break;
       case 'finished':
         actualTasks = finishedTasks;
+        break;
+      case 'matrix':
+        actualTasks = activeTasks;
         break;
       default:
         actualTasks = tasks;
@@ -99,8 +95,10 @@ class App extends Component {
           <Loader/>
         </div>
       );
+    } else if (UIState.activeTaskTable === 'matrix') {
+      return <Matrix tasks={actualTasks}/>;
     } else {
-      return <List tasks={actualTasks} onRemove={this.removeTask} onChangeState={this.changedState}/>;
+      return <List tasks={actualTasks} onChangeState={this.changedState}/>;
     }
   }
 

@@ -3,8 +3,9 @@ import Item from './ListItem';
 import List from '@material-ui/core/List';
 import { withStyles } from '@material-ui/core/styles';
 import { withSyncTask } from '../../core/hoc/withSyncTask';
+import { withEditTask } from '../../core/hoc/withEditTask';
 
-const ListItemWithSyncTask = withSyncTask(Item);
+const ListItemWithEditTask = withSyncTask(withEditTask(Item));
 
 const styles = {
   textContainer: {
@@ -17,7 +18,7 @@ const styles = {
 
 class TodoList extends Component {
   renderTasks() {
-    const { tasks, onRemove, onChangeState, classes } = this.props;
+    const { tasks, onChangeState, classes } = this.props;
     if (!tasks || tasks.length === 0) {
       return (
         <div className={classes.textContainer}>
@@ -25,7 +26,7 @@ class TodoList extends Component {
         </div>
       );
     } else {
-      return tasks.map(task => <ListItemWithSyncTask key={task.id} task={task} onRemove={onRemove} onChangeState={onChangeState} />);
+      return tasks.map(task => <ListItemWithEditTask key={task.id} task={task} onChangeState={onChangeState} />);
     }
   }
 
