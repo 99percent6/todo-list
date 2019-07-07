@@ -18,7 +18,7 @@ const styles = {
 
 class TodoList extends Component {
   renderTasks() {
-    const { tasks, onChangeState, classes } = this.props;
+    const { tasks, classes } = this.props;
     if (!tasks || tasks.length === 0) {
       return (
         <div className={classes.textContainer}>
@@ -26,7 +26,7 @@ class TodoList extends Component {
         </div>
       );
     } else {
-      return tasks.map(task => <ListItemWithEditTask key={task.id} task={task} onChangeState={onChangeState} />);
+      return tasks.map(task => <ListItemWithEditTask key={task.id} task={task}/>);
     }
   }
 

@@ -101,7 +101,7 @@ class Item extends Component {
 
   renderContent = () => {
     const { priorityList } = this.state;
-    const { classes, task, onChangeState } = this.props;
+    const { classes, task, changedState } = this.props;
     const isActiveState = task.state === 'active';
     const iconColor = isActiveState ? 'action' : 'disabled';
     const secondaryText = this.buildSecondaryTaskText(task);
@@ -134,7 +134,7 @@ class Item extends Component {
               primary: isActiveState ? classes.itemContentActive : classes.itemContentDisabled,
             }}
             primary={task.text}
-            onClick={() => onChangeState(task)}
+            onClick={() => changedState(task)}
             secondary={secondaryText}
           />
         </div>

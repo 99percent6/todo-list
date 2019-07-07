@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import * as actions from '../actions';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import DoneIcon from '@material-ui/icons/Done';
 
 export function withEditTask(WrappedComponent) {
   const mapStateToProps = (state) => {
@@ -31,6 +32,12 @@ export function withEditTask(WrappedComponent) {
     state = {
       isVisibleDialog: false,
       actions: [
+        {
+          label: 'Сделано',
+          value: 'done',
+          icon: <DoneIcon/>,
+          action: () => this.changedState(this.props.task),
+        },
         {
           label: 'Редактировать',
           value: 'edit',
@@ -86,6 +93,15 @@ export function withEditTask(WrappedComponent) {
       this.closeDialog();
     };
 
+    changedState = (task) => {
+      const { asyncUpdateTask, syncTasks } = this.props;
+      const status = task.state === 'active' ? 'finished' : 'active';
+      task = { ...task, state: status };
+      asyncUpdateTask({task}).then(res => {
+        syncTasks();
+      });
+    };
+
     render() {
       const { isVisibleDialog, actions } = this.state;
 
@@ -95,6 +111,7 @@ export function withEditTask(WrappedComponent) {
           closeDialog={this.closeDialog}
           removeTask={this.removeTask}
           applyChanges={this.applyChanges}
+          changedState={this.changedState}
           isVisibleDialog={isVisibleDialog}
           actions={actions}
           {...this.props}

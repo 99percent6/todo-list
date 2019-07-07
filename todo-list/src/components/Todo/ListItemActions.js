@@ -7,8 +7,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
-const ITEM_HEIGHT = 30;
-
 const styles = theme => ({
   root: {
     padding: '7px',
@@ -74,7 +72,7 @@ class ListItemActions extends Component {
           onClose={this.handleClose}
           PaperProps={{
             style: {
-              maxHeight: ITEM_HEIGHT * 4.5,
+              height: 'auto',
               width: 200,
             },
           }}

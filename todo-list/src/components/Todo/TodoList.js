@@ -33,7 +33,6 @@ const actionCreators = {
   delTask: actions.delTask,
   updTask: actions.updTask,
   replaceTasks: actions.replaceTasks,
-  asyncUpdateTask: actions.asyncUpdateTask,
   getProjects: actions.getProjects,
 };
 
@@ -59,15 +58,6 @@ class App extends Component {
         syncTasks();
       });
     }
-  };
-
-  changedState = (task) => {
-    const { asyncUpdateTask, syncTasks } = this.props;
-    const status = task.state === 'active' ? 'finished' : 'active';
-    task = { ...task, state: status };
-    asyncUpdateTask({task}).then(res => {
-      syncTasks();
-    });
   };
 
   renderList = () => {
@@ -98,7 +88,7 @@ class App extends Component {
     } else if (UIState.activeTaskTable === 'matrix') {
       return <Matrix tasks={actualTasks}/>;
     } else {
-      return <List tasks={actualTasks} onChangeState={this.changedState}/>;
+      return <List tasks={actualTasks}/>;
     }
   }
 
