@@ -2,11 +2,6 @@ import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AddProjectBtn from './AddProjectBtn';
 import AddProjectDialog from './AddProjectDialog';
 import ProjectList from './ProjectList';
@@ -99,20 +94,15 @@ class Projects extends Component {
 
     return (
       <div className={classes.root}>
-        <ExpansionPanel>
-          <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography className={classes.heading} variant="caption">Проекты</Typography>
-          </ExpansionPanelSummary>
-          <ExpansionPanelDetails className="options-container">
-            <AddProjectBtn openDialog={this.openDialog}/>
-            <ProjectListWithSyncTask onDeleteProject={this.deleteProject}/>
-            <AddProjectDialog
-              open={isVisibleDialog}
-              onSaveProject={this.createProject}
-              onCloseDialog={this.closeDialog}
-            />
-          </ExpansionPanelDetails>
-        </ExpansionPanel>
+        <div className="options-container">
+          <AddProjectBtn openDialog={this.openDialog}/>
+          <ProjectListWithSyncTask onDeleteProject={this.deleteProject}/>
+          <AddProjectDialog
+            open={isVisibleDialog}
+            onSaveProject={this.createProject}
+            onCloseDialog={this.closeDialog}
+          />
+        </div>
       </div>
     );
   };

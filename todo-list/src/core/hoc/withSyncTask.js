@@ -34,7 +34,7 @@ export function withSyncTask(WrappedComponent) {
     };
 
     render() {
-      return <WrappedComponent syncTasks={this.withSyncTasks} test="test" {...this.props} />;
+      return <WrappedComponent syncTasks={this.withSyncTasks} {...this.props} />;
     };
   };
 
