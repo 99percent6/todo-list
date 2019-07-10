@@ -88,7 +88,7 @@ class AddTask extends Component {
               variant="outlined"
             />
           </FormControl>
-          <Fab onClick={this.addTask} size="medium" color="primary" aria-label="Add" className="">
+          <Fab onClick={this.addTask} size="medium" color="secondary" aria-label="Add" className="">
             <AddIcon />
           </Fab>
         </div>
