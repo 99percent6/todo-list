@@ -39,12 +39,21 @@ const StyledMenuItem = withStyles(theme => ({
 class PopupMenu extends Component {
   renderActions = () => {
     const { actions } = this.props;
-    return actions.map(action => {
-      return (
-        <StyledMenuItem key={action.value} onClick={() => this.handleAction(action.action)}>
+    const icon = (action) => {
+      if (action.icon) {
+        return (
           <ListItemIcon>
             { action.icon }
           </ListItemIcon>
+        );
+      }
+      return null;
+    }
+
+    return actions.map(action => {
+      return (
+        <StyledMenuItem key={action.value} onClick={() => this.handleAction(action.action)}>
+          { icon(action) }
           <ListItemText primary={action.label} />
         </StyledMenuItem>
       )

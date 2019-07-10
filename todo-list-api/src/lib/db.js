@@ -132,13 +132,13 @@ export default class db {
     }
   };
 
-  async getTasks ({ value, field = 'author' }) {
+  async getTasks ({ value, field = 'author', sortField = 'createdAt',  sortValue = 'desc' }) {
     if (!value) {
       console.error('Value is required field');
       return { code: 404, result: 'Value is required field' };
     }
     try {
-      const sort = { field: 'createdAt', value: 'desc' };
+      const sort = { field: sortField, value: sortValue };
       const result = await this.findByField({ field, value, collection: this.tasksCollectionName, sort });
       if (result && result.code === 200 && result.result.length) {
         return result;

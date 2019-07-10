@@ -9,19 +9,23 @@ export default ({ config, db }) => {
   const database = new Database({ config, db });
 
   api.get('/list', async function (req, res) {
-    const { token, field, value } = req.query;
+    const { token, field, value, sort } = req.query;
+
     if (!token) {
       return res.send({ result: 'Token is required field', code: 500 }).status(500);
     }
+    
     try {
       const user = await redisClient.get(token);
       if (user) {
         const userId = user.id;
         let result;
+        const sortField = sort.split(':')[0];
+        const sortValue = sort.split(':')[1];
         if (field && value) {
-          result = await database.getTasks({ value, field });
+          result = await database.getTasks({ value, field, sortField, sortValue });
         } else {
-          result = await database.getTasks({ value: userId });
+          result = await database.getTasks({ value: userId, sortField, sortValue });
         }
         if (result && result.code === 200) {
           return res.send(result).status(result.code);

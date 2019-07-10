@@ -24,6 +24,7 @@ export const addTask = createAction('ADD_TASK');
 export const delTask = createAction('DEL_TASK');
 export const updTask = createAction('UPD_TASK');
 export const replaceTasks = createAction('REPLACE_TASKS');
+export const setTaskSort = createAction('SET_TASK_SORT');
 export const setAuthUserState = createAction('SET_AUTH_USER_STATE');
 export const setRegistrationUserState = createAction('SET_REGISTRATION_USER_STATE');
 export const setSyncTasksState = createAction('SET_SYNC_TASKS_STATE');
@@ -40,15 +41,15 @@ export const addProject = createAction('ADD_PROJECT');
 export const deleteProject = createAction('DELETE_PROJECT');
 export const setSyncProjectsState = createAction('SET_SYNC_PROJECTS_STATE');
 
-export const syncTasks = ({ token, field = '', value = '' }) => async(dispatch) => {
+export const syncTasks = ({ token, field = '', value = '', sort }) => async(dispatch) => {
     if (!token) {
         dispatch(setSyncTasksState({ syncTasksState: 'fail' }));
         throw new Error('Token is required field');
     }
     try {
-        let url = `${apiHost}/tasks/list`;
+        let url = `${apiHost}/tasks/list?sort=${sort}`;
         if (field && value) {
-            url += `?field=${field}&value=${value}`;
+            url += `&field=${field}&value=${value}`;
         }
         dispatch(setSyncTasksState({ syncTasksState: 'request' }));
         const result = await queryHandler({ url, method: 'GET' });

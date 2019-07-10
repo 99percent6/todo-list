@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from "react-router-dom";
 import { connect } from 'react-redux';
+import queryString from 'query-string';
 import { withStyles } from '@material-ui/core/styles';
 import * as actions from '../../core/actions';
 import List from './List';
@@ -34,6 +35,7 @@ const actionCreators = {
   updTask: actions.updTask,
   replaceTasks: actions.replaceTasks,
   getProjects: actions.getProjects,
+  setTaskSort: actions.setTaskSort,
 };
 
 const styles = theme => ({
@@ -51,8 +53,13 @@ const styles = theme => ({
 });
 
 class App extends Component {
-  componentDidMount () {
-    const { getProjects, token, syncTasks } = this.props;
+  async componentDidMount () {
+    const { getProjects, token, syncTasks, location, setTaskSort } = this.props;
+    const searchParams = queryString.parse(location.search);
+
+    if (searchParams.sort) {
+      await setTaskSort({ sort: searchParams.sort });
+    }
     if (token) {
       getProjects({ token }).then(res => {
         syncTasks();

@@ -6,10 +6,11 @@ import { projectsSelector } from '../selectors';
 
 export function withSyncTask(WrappedComponent) {
   const mapStateToProps = (state) => {
-    const { user } = state;
+    const { user, tasks } = state;
     const props = {
       token: user.token,
       projectList: projectsSelector(state),
+      taskSort: tasks.sort,
     };
     return props;
   }
@@ -20,15 +21,15 @@ export function withSyncTask(WrappedComponent) {
 
   class WithSyncTask extends Component {
     withSyncTasks = (projectSlug = null) => {
-      const { token, projectList, match, asyncSyncTasks } = this.props;
+      const { token, projectList, match, asyncSyncTasks, taskSort } = this.props;
       if (token) {
         const currentProjectSlug = projectSlug || (match && match.params && match.params.project);
         if (currentProjectSlug === 'all') {
-          asyncSyncTasks({ token });
+          asyncSyncTasks({ token, sort: taskSort });
         } else {
           const currentProject = projectList.find(project => project.slug === currentProjectSlug);
           const currentProjectId = currentProject && currentProject.id;
-          asyncSyncTasks({ token, field: 'project.id', value: currentProjectId });
+          asyncSyncTasks({ token, field: 'project.id', value: currentProjectId, sort: taskSort });
         }
       }
     };

@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import Item from './ListItem';
 import List from '@material-ui/core/List';
+import Sort from './Sort';
 import { withStyles } from '@material-ui/core/styles';
 import { withSyncTask } from '../../core/hoc/withSyncTask';
 import { withEditTask } from '../../core/hoc/withEditTask';
 
 const ListItemWithEditTask = withSyncTask(withEditTask(Item));
+const SortWithSyncTask = withSyncTask(Sort);
 
 const styles = {
   textContainer: {
@@ -13,6 +15,14 @@ const styles = {
     display: 'flex',
     textAlign: 'center',
     justifyContent: 'center',
+  },
+  listContainer: {
+    paddingTop: 0,
+  },
+  sortContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    padding: '10px 12px',
   },
 };
 
@@ -26,14 +36,23 @@ class TodoList extends Component {
         </div>
       );
     } else {
-      return tasks.map(task => <ListItemWithEditTask key={task.id} task={task}/>);
+      return (
+        <div>
+          <div className={classes.sortContainer}>
+            <SortWithSyncTask/>
+          </div>
+          { tasks.map(task => <ListItemWithEditTask key={task.id} task={task}/>) }
+        </div>
+      );
     }
   }
 
   render () {
+    const { classes } = this.props;
+
     return (
       <div>
-        <List>
+        <List className={classes.listContainer}>
           { this.renderTasks() }
         </List>
       </div>

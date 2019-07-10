@@ -47,18 +47,42 @@ const addTask = handleActions({
 
 const tasks = handleActions({
   [actions.addTask](state, { payload: { task } }) {
-    return {[task.id]: task, ...state};
+    let taskList = state.list;
+    taskList = { [task.id]: task, ...taskList };
+    return {
+      ...state,
+      list: taskList,
+    };
   },
   [actions.delTask](state, { payload: { id } }) {
-    return omit(state, [id]);
+    let taskList = state.list;
+    omit(taskList, [id]);
+    return {
+      ...state,
+      list: taskList,
+    };
   },
   [actions.updTask](state, { payload: { task } }) {
-    return {...state, [task.id]: task};
+    let taskList = state.list;
+    taskList = { ...taskList, [task.id]: task };
+    return {
+      ...state,
+      list: taskList,
+    };
   },
   [actions.replaceTasks](state, { payload: { tasks } }) {
-    return tasks;
+    return {
+      ...state,
+      list: tasks,
+    };
   },
-}, {});
+  [actions.setTaskSort](state, { payload: { sort } }) {
+    return {
+      ...state,
+      sort,
+    };
+  },
+}, { list: {}, sort: 'createdAt:desc' });
 
 const UIState = handleActions({
   [actions.updActiveTaskTab](state, { payload: { value } }) {

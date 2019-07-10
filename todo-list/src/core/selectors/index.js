@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
 
-const getTasks = state => state.tasks;
+const getTasks = state => state.tasks.list;
 const getProjects = state => state.project.list;
 
 export const tasksSelector = createSelector(
