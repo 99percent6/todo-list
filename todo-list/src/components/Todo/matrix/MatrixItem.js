@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
+import { withStyles } from '@material-ui/core/styles';
 import PopupMenu from './PopupMenu';
 import DialogEditOptions from '../additional-options/DialogEditOptions';
+
+const styles = {
+  itemContainer: {
+    display: 'inline-flex',
+  },
+};
 
 class MatrixItem extends Component {
   state = {
@@ -16,11 +23,11 @@ class MatrixItem extends Component {
   };
 
   render() {
-    const { task, taskStyle, closeDialog, applyChanges, isVisibleDialog, actions } = this.props;
+    const { task, taskStyle, closeDialog, applyChanges, isVisibleDialog, actions, classes } = this.props;
     const { anchorEl } = this.state;
 
     return (
-      <div>
+      <div className={classes.itemContainer}>
         <div style={taskStyle} onClick={this.handleClickPopupMenu}>{ task.text }</div>
         <PopupMenu anchorEl={anchorEl} actions={actions} handleClose={this.handleClosePopupMenu}/>
         <DialogEditOptions open={isVisibleDialog} onCloseDialog={closeDialog} task={task} onSaveTask={() => applyChanges(task)}/>
@@ -29,4 +36,4 @@ class MatrixItem extends Component {
   };
 }
 
-export default MatrixItem;
+export default withStyles(styles)(MatrixItem);
