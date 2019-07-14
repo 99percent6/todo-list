@@ -11,7 +11,9 @@
     "migrateFeedbackToMysql": "npx babel-node scripts/firebaseToMysql/feedbacks",
     "migrateProjectsToMysql": "npx babel-node scripts/firebaseToMysql/projects",
     "migrateTasksToMysql": "npx babel-node scripts/firebaseToMysql/tasks",
-    "migrateUsersToMysql": "npx babel-node scripts/firebaseToMysql/users"
+    "migrateUsersToMysql": "npx babel-node scripts/firebaseToMysql/users",
+    "migrateTasksToEs": "npx babel-node scripts/mysqlToElasticsearch/tasks.js",
+    "migrateProjectsToEs": "npx babel-node scripts/mysqlToElasticsearch/projects.js"
   },
   "repository": {
     "type": "git",
