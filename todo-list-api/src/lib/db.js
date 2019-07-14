@@ -132,6 +132,22 @@ export default class db {
     }
   };
 
+  async getAllUsers () {
+    try {
+      const tasks = await this.db.collection(this.usersCollectionName).get();
+      let result = [];
+      
+      tasks.docs.forEach(doc => {
+        let data = doc.data();
+        result.push(data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   async getTasks ({ value, field = 'author', sortField = 'createdAt',  sortValue = 'desc' }) {
     if (!value) {
       console.error('Value is required field');
@@ -150,6 +166,22 @@ export default class db {
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
+    }
+  };
+
+  async getAllTasks () {
+    try {
+      const tasks = await this.db.collection(this.tasksCollectionName).get();
+      let result = [];
+      
+      tasks.docs.forEach(doc => {
+        let data = doc.data();
+        result.push(data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -217,6 +249,22 @@ export default class db {
     }
   };
 
+  async getAllFeedbacks () {
+    try {
+      const tasks = await this.db.collection(this.feedbackCollectionName).get();
+      let result = [];
+      
+      tasks.docs.forEach(doc => {
+        let data = doc.data();
+        result.push(data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   async createProject ({ project }) {
     if (!project) {
       console.error('Missing required fields');
@@ -253,6 +301,22 @@ export default class db {
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
+    }
+  };
+
+  async getAllProjects () {
+    try {
+      const tasks = await this.db.collection(this.projectCollectionName).get();
+      let result = [];
+      
+      tasks.docs.forEach(doc => {
+        let data = doc.data();
+        result.push(data);
+      });
+
+      return result;
+    } catch (error) {
+      console.error(error);
     }
   };
 
