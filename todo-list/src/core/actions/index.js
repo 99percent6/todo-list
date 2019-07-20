@@ -56,8 +56,9 @@ export const syncTasks = ({ token, field = '', value = '', sort }) => async(disp
         if (result && result.code === 200) {
             let objList = {};
             result.result.forEach(task => {
-                objList = { ...objList, [task.id]: task };
+                objList = { ...objList, [`'${task.id}'`]: task };
             })
+
             dispatch(setSyncTasksState({ syncTasksState: 'success' }));
             dispatch(replaceTasks({ tasks: objList }));
         } else {

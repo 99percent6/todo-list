@@ -7,9 +7,9 @@ import { isValidRegistrationData, isValidEmail } from '../helpers/user';
 const redisClient = new Redis({ expire: 3600 });
 const tokgen = new TokenGenerator(256, TokenGenerator.BASE58);
 
-export default ({ config, db }) => {
+export default ({ config, db, mysql }) => {
   const api = Router();
-  const database = new Database({ config, db });
+  const database = new Database({ config, db, mysql });
 
   api.post('/registration', async function(req, res) {
     let user = req.body;
@@ -42,6 +42,7 @@ export default ({ config, db }) => {
     }
     try {
       const result = await database.getUser({ login });
+
       if (result.code === 200) {
         const user = result.result;
         const userPassword = user.password;

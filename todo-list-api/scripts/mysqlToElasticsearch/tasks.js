@@ -46,11 +46,21 @@ async function migrateTasks () {
 }
 
 function syncTasks () {
-  connection.query('SELECT * FROM tasks', function (error, results, fields) {
+  connection.query('SELECT * FROM tasks', function (error, tasks, fields) {
     if (error) throw error;
-    if (results && results.length) {
-      console.log('Received tasks - ', results.length);
-      createDocuments(results);
+    if (tasks && tasks.length) {
+      console.log('Received tasks - ', tasks.length);
+      connection.query('SELECT * FROM projects', function (error, projects, fields) {
+        if (error) throw error;
+        console.log('Received projects - ', projects.length);
+        tasks.forEach(task => {
+          const project = projects.find(itm => itm.id === task.project);
+          if (project) {
+            task.project = project;
+          }
+        });
+        createDocuments(tasks);
+      })
     } else {
       console.log('No tasks in mysql');
       closeProcess();

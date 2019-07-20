@@ -4,9 +4,9 @@ import Redis from '../lib/redis';
 
 const redisClient = new Redis({ expire: 3600 });
 
-export default ({ config, db }) => {
+export default ({ config, db, mysql }) => {
   const api = Router();
-  const database = new Database({ config, db });
+  const database = new Database({ config, db, mysql });
 
   api.get('/list', async function (req, res) {
     const { token } = req.query;
