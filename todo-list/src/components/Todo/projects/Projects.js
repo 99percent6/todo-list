@@ -28,7 +28,6 @@ const actionCreators = {
   asyncDeleteProject: actions.asyncDeleteProject,
   asyncDeleteTasksByProject: actions.asyncDeleteTasksByProject,
   getProjects: actions.getProjects,
-  syncTasks: actions.syncTasks,
 };
 
 const styles = theme => ({

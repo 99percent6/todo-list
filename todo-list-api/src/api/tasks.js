@@ -4,9 +4,9 @@ import Redis from '../lib/redis';
 
 const redisClient = new Redis({ expire: 3600 });
 
-export default ({ config, db }) => {
+export default ({ config, db, mysql }) => {
   const api = Router();
-  const database = new Database({ config, db });
+  const database = new Database({ config, db, mysql });
 
   api.get('/list', async function (req, res) {
     const { token, field, value, sort } = req.query;
@@ -22,11 +22,13 @@ export default ({ config, db }) => {
         let result;
         const sortField = sort.split(':')[0];
         const sortValue = sort.split(':')[1];
+
         if (field && value) {
           result = await database.getTasks({ value, field, sortField, sortValue });
         } else {
           result = await database.getTasks({ value: userId, sortField, sortValue });
         }
+
         if (result && result.code === 200) {
           return res.send(result).status(result.code);
         } else {
@@ -50,8 +52,14 @@ export default ({ config, db }) => {
     try {
       const user = await redisClient.get(token);
       if (user) {
-        task = { ...task, author: user.id, createdAt: Date.now() };
+        task = {
+          ...task,
+          author: user.id,
+          createdAt: Date.now()
+        };
+
         const result = await database.addTask({ task });
+
         return res.send(result).status(result.code);
       } else {
         return res.send({ result: 'User is not authorized', code: 401 }).status(401);

@@ -48,7 +48,7 @@ const addTask = handleActions({
 const tasks = handleActions({
   [actions.addTask](state, { payload: { task } }) {
     let taskList = state.list;
-    taskList = { [task.id]: task, ...taskList };
+    taskList = { [`'${task.id}'`]: task, ...taskList };
     return {
       ...state,
       list: taskList,
@@ -64,7 +64,7 @@ const tasks = handleActions({
   },
   [actions.updTask](state, { payload: { task } }) {
     let taskList = state.list;
-    taskList = { ...taskList, [task.id]: task };
+    taskList = { ...taskList, [`'${task.id}'`]: task };
     return {
       ...state,
       list: taskList,

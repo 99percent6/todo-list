@@ -15,6 +15,7 @@ import '../../css/components/todoList/base.scss';
 import { withSyncTask } from '../../core/hoc/withSyncTask';
 
 const AddTaskWithSyncTask = withSyncTask(AddTask);
+const ProjectsWithSyncTask = withSyncTask(Projects);
 
 const mapStateToProps = (state) => {
   const { text, UIState, user } = state;
@@ -103,7 +104,7 @@ class App extends Component {
     return (
       <div>
         <div>
-          <Projects/>
+          <ProjectsWithSyncTask/>
           <AddTaskWithSyncTask/>
         </div>
         <ListStateTabs/>

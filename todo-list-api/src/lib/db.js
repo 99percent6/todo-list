@@ -1,48 +1,197 @@
 import CryptoJS from 'crypto-js';
+import bodybuilder from 'bodybuilder';
+import { Client } from '@elastic/elasticsearch';
+import { has } from 'lodash';
+
+const client = new Client({
+  node: 'http://localhost:9200',
+  requestTimeout: 5000,
+  keepAlive: false,
+  log: 'debug'
+});
 
 export default class db {
-  constructor ({config, db}) {
+  constructor ({config, db, mysql}) {
     this.config = config;
     this.db = db;
+    this.mysql = mysql;
     this.usersCollectionName = config.db.collectionName.users;
     this.tasksCollectionName = config.db.collectionName.tasks;
     this.feedbackCollectionName = config.db.collectionName.feedback;
     this.projectCollectionName = config.db.collectionName.projects;
   };
 
-  async findByField ({ field, operator = '==', value, collection, sort }) {
-    if (!field || !value) {
-      return { code: 404, result: 'Missing field or value' };
+  prepareRecord (record) {
+    let tempRecord = { ...record };
+    for (let key in tempRecord) {
+      tempRecord[key] = tempRecord[key] ? tempRecord[key] : null
     }
+    return tempRecord;
+  };
+
+  esResponseHandler (response) {
+    if (has(response, ['body', 'hits', 'hits'])) {
+      let hits = [];
+      response.body.hits.hits.forEach(item => {
+        hits = [...hits, item._source];
+      })
+      return hits
+    } else {
+      return []
+    }
+  };
+
+  async esSearchByQuery ({ query, entityType = 'task', from = 0, size = 50, sort = 'createdAt:desc' }) {
+    if (!query) {
+      query = bodybuilder().build();
+    }
+
+    const index = this.config.es.indexByType[entityType];
+
+    if (!index) {
+      console.error('Index not found');
+      return { code: 500, result: 'Index not found' };
+    }
+
     try {
-      let query = this.db.collection(collection).where(field, operator, value).get();
-      if (sort) {
-        query = this.db.collection(collection).where(field, operator, value).orderBy(sort.field, sort.value).get();
-      }
-      const answer = await query;
-      let result = [];
-      if (answer && answer.docs && answer.docs.length) {
-        answer.docs.forEach(doc => {
-          let data = doc.data();
-          Object.assign(data, { id: doc.id });
-          result.push(data);
-        })
-        return { code: 200, result };
-      } else {
-        return { code: 404, result: 'Not found' };
-      }
+      const esResult = await client.search({
+        from,
+        size,
+        index,
+        sort,
+        body: query
+      });
+      const response = this.esResponseHandler(esResult);
+      return { code: 200, result: response };
     } catch (error) {
-      console.error(error);
+      console.error(JSON.stringify(error));
       return { code: 500, result: error };
     }
   };
 
-  async deleteById ({ id, collection = '' }) {
-    if (!id || !collection) {
+  mysqlSearchByQuery ({ query }) {
+    return new Promise ((resolve, reject) => {
+      this.mysql.query(query, function (error, results, fields) {
+        if (error) {
+          console.error(error);
+          return reject({ code: 500, result: 'Internal error' });
+        }
+
+        if (results && results.length) {
+          return resolve({ code: 200, result: results });
+        } else {
+          return resolve({ code: 404, result: 'Not found' });
+        }
+      });
+    }).catch(err => {
+      throw new Error(err);
+    })
+  }
+
+  async addRecordMysql ({ table, record }) {
+    return new Promise((resolve, reject) => {
+      if (!table || !record) {
+        return reject({ code: 404, result: 'Missing field or value' });
+      }
+
+      let preparedRecord = this.prepareRecord(record);
+      delete preparedRecord.id;
+      const command = `INSERT INTO ${table} SET ?`;
+      this.mysql.query(command, preparedRecord, (err, results) => {
+        if (err) {
+          console.error(err);
+          return reject({ code: 500, result: err });
+        }
+
+        return resolve({ code: 200, result: results });
+      })
+    })
+  };
+
+  async addDocumentEs ({ index, record }) {
+    if (!index || !record) {
       return { code: 404, result: 'Missing field or value' };
     }
+
     try {
-      const result = await this.db.collection(collection).doc(id).delete();
+      const result = await client.create({
+        index,
+        id: record.id,
+        refresh: true,
+        body: record
+      });
+
+      return { code: 200, result: result.body };
+    } catch (error) {
+      console.error(JSON.stringify(error));
+      return { code: 500, result: error };
+    }
+  };
+
+  updateRecordMysql ({ query, values }) {
+    return new Promise((resolve, reject) => {
+      if (!query || !values) {
+        return reject({ code: 404, result: 'Missing field or value' });
+      }
+
+      this.mysql.query(query, values, (err, results) => {
+        if (err) {
+          console.error(err);
+          return reject({ code: 500, result: err });
+        }
+
+        return resolve({ code: 200, result: 'OK' });
+      })
+    });
+  };
+
+  async updateDocumentEs ({ index, record }) {
+    if (!index || !record) {
+      return { code: 404, result: 'Missing field or value' };
+    }
+
+    try {
+      await client.update({
+        index,
+        id: record.id,
+        refresh: true,
+        body: {
+          doc: record
+        }
+      });
+
+      return { code: 200, result: 'OK' };
+    } catch (error) {
+      console.error(JSON.stringify(error));
+      return { code: 500, result: error };
+    }
+  };
+
+  async deleteByIdMysql ({ id, table }) {
+    if (!id || !table) {
+      return { code: 404, result: 'Missing field or value' };
+    }
+
+    this.mysql.query(`DELETE FROM ${table} WHERE id = ${id}`, (error, result) => {
+      if (error) {
+        console.error(error);
+        return { code: 500, result: error };
+      }
+      return { code: 200, result: 'OK' };
+    })
+  };
+
+  async deleteByIdEs ({ id, index }) {
+    if (!id || !index) {
+      return { code: 404, result: 'Missing field or value' };
+    }
+
+    try {
+      await client.delete({
+        index,
+        id,
+        refresh: true
+      });
       return { code: 200, result: 'OK' };
     } catch (error) {
       console.error(error);
@@ -58,51 +207,16 @@ export default class db {
     const encriptedPassword = CryptoJS.AES.encrypt(user.password, this.config.db.secretKey).toString();
     Object.assign(user, { password: encriptedPassword });
     try {
-      const dbUser = await this.findByField({ field: 'login', value: user.login, collection: this.usersCollectionName });
-      const dbEmail = await this.findByField({ field: 'email', value: user.email, collection: this.usersCollectionName });
+      const dbUser = await this.mysqlSearchByQuery({ query: `SELECT login FROM users WHERE login = '${user.login}'` });
+      const dbEmail = await this.mysqlSearchByQuery({ query: `SELECT email FROM users WHERE email = '${user.email}'` });
+
       if (dbUser && dbUser.code === 200) {
         return { code: 500, result: 'Login busy' };
       } else if (dbEmail && dbEmail.code === 200) {
         return { code: 500, result: 'Email busy' };
       } else {
-        const result = await this.db.collection(this.usersCollectionName).add(user);
-        return { code: 200, result: result.id };
-      }
-    } catch (error) {
-      console.error(error);
-      return { code: 500, result: error };
-    }
-  };
-
-  async checkUserLogin (login) {
-    if (!user.login) {
-      console.error('User login is missing');
-      return { code: 404, result: 'Missing user login' };
-    }
-    try {
-      const dbUser = await this.findByField({ field: 'login', value: login, collection: this.usersCollectionName });
-      if (dbUser && dbUser.code === 404) {
-        return { code: 200, result: 'OK' };
-      } else {
-        return { code: 500, result: 'Login busy' };
-      }
-    } catch (error) {
-      console.error(error);
-      return { code: 500, result: error };
-    }
-  };
-
-  async checkUserEmail (email) {
-    if (!user.email) {
-      console.error('Email login is missing');
-      return { code: 404, result: 'Missing user email' };
-    }
-    try {
-      const dbUser = await this.findByField({ field: 'email', value: email, collection: this.usersCollectionName });
-      if (dbUser && dbUser.code === 404) {
-        return { code: 200, result: 'OK' };
-      } else {
-        return { code: 500, result: 'Email busy' };
+        const result = await this.addRecordMysql({ table: 'users', record: user });
+        return { code: 200, result: result.result.insertId };
       }
     } catch (error) {
       console.error(error);
@@ -115,16 +229,16 @@ export default class db {
       console.error('Login is required field');
       return { code: 404, result: 'Login is required field' };
     }
+
     try {
-      const result = await this.findByField({ field: 'login', value: login, collection: this.usersCollectionName });
-      if (result && result.code === 200 && result.result.length) {
+      const result = await this.mysqlSearchByQuery({ query: `SELECT * FROM users WHERE login='${login}'` });
+
+      if (result.code === 200 && result.result.length) {
         let user = result.result.find(e => e.login === login);
-        if (user && user.password) {
-          user.password = CryptoJS.AES.decrypt(user.password, this.config.db.secretKey).toString(CryptoJS.enc.Utf8);
-        }
+        user.password = CryptoJS.AES.decrypt(user.password, this.config.db.secretKey).toString(CryptoJS.enc.Utf8);
         return { code: result.code, result: user };
       } else {
-        return { code: result.code, result: 'User not found' };
+        return { code: 404, result: 'User not found' };
       }
     } catch (error) {
       console.error(error);
@@ -154,17 +268,16 @@ export default class db {
       return { code: 404, result: 'Value is required field' };
     }
     try {
-      const sort = { field: sortField, value: sortValue };
-      const result = await this.findByField({ field, value, collection: this.tasksCollectionName, sort });
-      if (result && result.code === 200 && result.result.length) {
-        return result;
-      } else if (result && result.code === 404) {
-        return { code: 200, result: [] };
-      } else {
-        return { code: result.code, result: [] };
-      }
+      let query = bodybuilder().query('term', field, value).build();
+      const result = await this.esSearchByQuery({
+        query,
+        entityType: 'task',
+        sort: `${sortField}:${sortValue}`
+      })
+
+      return result;
     } catch (error) {
-      console.error(error);
+      console.error(JSON.stringify(error));
       return { code: 500, result: error };
     }
   };
@@ -191,9 +304,18 @@ export default class db {
       return { code: 404, result: 'Task is required field' };
     }
     try {
-      const result = await this.db.collection(this.tasksCollectionName).add(task);
-      if (result) {
-        return { code: 200, result: result.id };
+      const preparedTask = this.prepareRecord(task);
+      const taskForMysql = {
+        ...preparedTask,
+        project: preparedTask.project ? preparedTask.project.id : preparedTask.project
+      };
+
+      const mysqlRecord = await this.addRecordMysql({ table: 'tasks', record: taskForMysql });
+      let taskWithId = { ...preparedTask, id: mysqlRecord.result.insertId };
+      const esRecord = await this.addDocumentEs({ index: 'tasks', record: taskWithId });
+
+      if (esRecord) {
+        return { code: 200, result: esRecord.result._id };
       } else {
         return { code: 500, result: "Task doesn't add" };
       }
@@ -209,8 +331,10 @@ export default class db {
       return { code: 404, result: 'Task id is required field' };
     }
     try {
-      const result = await this.deleteById({ id, collection: this.tasksCollectionName });
-      return result;
+      await this.deleteByIdMysql({ id, table: 'tasks' });
+      await this.deleteByIdEs({ id, index: 'tasks' });
+
+      return { code: 200, result: 'OK' };
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
@@ -223,7 +347,15 @@ export default class db {
       return { code: 404, result: 'Task is required field' };
     }
     try {
-      const result = await this.db.collection(this.tasksCollectionName).doc(task.id).update(task);
+      const preparedTask = this.prepareRecord(task);
+      const taskForMysql = {
+        ...preparedTask,
+        project: preparedTask.project ? preparedTask.project.id : preparedTask.project
+      };
+
+      await this.updateRecordMysql({ query: `UPDATE tasks SET ? WHERE id = '${task.id}'`, values: taskForMysql });
+      await this.updateDocumentEs({ index: 'tasks', record: preparedTask });
+
       return { code: 200, result: 'OK' };
     } catch (error) {
       console.error(error);
@@ -237,11 +369,12 @@ export default class db {
       return { code: 404, result: 'Missing required fields' };
     }
     try {
-      const result = await this.db.collection(this.feedbackCollectionName).add(data);
+      const result = await this.addRecordMysql({ table: 'feedback', record: data });
+
       if (result) {
-        return { code: 200, result: result.id };
+        return { code: 200, result: result.result.insertId };
       } else {
-        return { code: 500, result: "Task doesn't add" };
+        return { code: 500, result: "Feedback doesn't add" };
       }
     } catch (error) {
       console.error(error);
@@ -271,11 +404,14 @@ export default class db {
       return { code: 404, result: 'Missing required fields' };
     }
     try {
-      const result = await this.db.collection(this.projectCollectionName).add(project);
-      if (result) {
-        return { code: 200, result: result.id };
+      const mysqlRecord = await this.addRecordMysql({ table: 'projects', record: project });
+      let projectWithId = { ...project, id: mysqlRecord.result.insertId };
+      const esRecord = await this.addDocumentEs({ index: 'projects', record: projectWithId });
+
+      if (esRecord) {
+        return { code: 200, result: esRecord.result._id };
       } else {
-        return { code: 500, result: "Project doesn't create" };
+        return { code: 500, result: "Project doesn't add" };
       }
     } catch (error) {
       console.error(error);
@@ -289,15 +425,13 @@ export default class db {
       return { code: 404, result: 'User id is required field' };
     }
     try {
-      const sort = { field: 'createdAt', value: 'desc' };
-      const result = await this.findByField({ field: 'author', value: userId, collection: this.projectCollectionName, sort });
-      if (result && result.code === 200 && result.result.length) {
-        return result;
-      } else if (result && result.code === 404) {
-        return { code: 200, result: [] };
-      } else {
-        return { code: result.code, result: [] };
-      }
+      let query = bodybuilder().query('term', 'author', userId).build();
+      const result = await this.esSearchByQuery({
+        query,
+        entityType: 'project'
+      })
+
+      return result;
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
@@ -326,8 +460,10 @@ export default class db {
       return { code: 404, result: 'Project id is required field' };
     }
     try {
-      const result = await this.deleteById({ id, collection: this.projectCollectionName });
-      return result;
+      await this.deleteByIdMysql({ id, table: 'projects' });
+      await this.deleteByIdEs({ id, index: 'projects' });
+
+      return { code: 200, result: 'OK' };
     } catch (error) {
       console.error(error);
       return { code: 500, result: error };
