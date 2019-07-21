@@ -10,31 +10,30 @@ var _db = require('../lib/db');
 
 var _db2 = _interopRequireDefault(_db);
 
-var _redis = require('../lib/redis');
-
-var _redis2 = _interopRequireDefault(_redis);
-
 var _uuidTokenGenerator = require('uuid-token-generator');
 
 var _uuidTokenGenerator2 = _interopRequireDefault(_uuidTokenGenerator);
+
+var _user = require('../helpers/user');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-var redisClient = new _redis2.default({ expire: 3600 });
 var tokgen = new _uuidTokenGenerator2.default(256, _uuidTokenGenerator2.default.BASE58);
 
 exports.default = function (_ref) {
   var config = _ref.config,
-      db = _ref.db;
+      db = _ref.db,
+      mysql = _ref.mysql,
+      redisClient = _ref.redisClient;
 
   var api = (0, _express.Router)();
-  var database = new _db2.default({ config: config, db: db });
+  var database = new _db2.default({ config: config, db: db, mysql: mysql });
 
   api.post('/registration', function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res) {
-      var user, login, password, repeatedPassword, name, email, result;
+      var user, login, password, repeatedPassword, name, email, isValidData, result;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
@@ -50,42 +49,52 @@ exports.default = function (_ref) {
               return _context.abrupt('return', res.send({ result: 'Missing required field', code: 500 }).status(500));
 
             case 4:
-              _context.prev = 4;
+              isValidData = (0, _user.isValidRegistrationData)(user);
+
+              if (!(isValidData.code !== 200)) {
+                _context.next = 7;
+                break;
+              }
+
+              return _context.abrupt('return', res.send(isValidData).status(isValidData.code));
+
+            case 7:
+              _context.prev = 7;
 
               delete user.repeatedPassword;
-              _context.next = 8;
+              _context.next = 11;
               return database.registerUser(user);
 
-            case 8:
+            case 11:
               result = _context.sent;
 
               if (!(result.code === 200)) {
-                _context.next = 13;
+                _context.next = 16;
                 break;
               }
 
               return _context.abrupt('return', res.send(result).status(result.code));
 
-            case 13:
+            case 16:
               return _context.abrupt('return', res.send(result).status(result.code));
 
-            case 14:
-              _context.next = 20;
+            case 17:
+              _context.next = 23;
               break;
 
-            case 16:
-              _context.prev = 16;
-              _context.t0 = _context['catch'](4);
+            case 19:
+              _context.prev = 19;
+              _context.t0 = _context['catch'](7);
 
               console.error(_context.t0);
               res.send({ result: 'Internal error', code: 500 }).status(500);
 
-            case 20:
+            case 23:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, this, [[4, 16]]);
+      }, _callee, this, [[7, 19]]);
     }));
 
     return function (_x, _x2) {
@@ -290,6 +299,52 @@ exports.default = function (_ref) {
 
     return function (_x7, _x8) {
       return _ref5.apply(this, arguments);
+    };
+  }());
+
+  api.post('/sendFeedback', function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(req, res) {
+      var data, title, content, email, result;
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              data = req.body;
+              title = data.title, content = data.content, email = data.email;
+
+              if (!(!title || !content || !email)) {
+                _context5.next = 4;
+                break;
+              }
+
+              return _context5.abrupt('return', res.send({ result: 'Missing required field', code: 500 }).status(500));
+
+            case 4:
+              if ((0, _user.isValidEmail)(email)) {
+                _context5.next = 6;
+                break;
+              }
+
+              return _context5.abrupt('return', res.send({ result: 'Email is not valid', code: 500 }).status(500));
+
+            case 6:
+              _context5.next = 8;
+              return database.sendFeedback({ data: data });
+
+            case 8:
+              result = _context5.sent;
+              return _context5.abrupt('return', res.send(result).status(result.code));
+
+            case 10:
+            case 'end':
+              return _context5.stop();
+          }
+        }
+      }, _callee5, this);
+    }));
+
+    return function (_x9, _x10) {
+      return _ref6.apply(this, arguments);
     };
   }());
 
