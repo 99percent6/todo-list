@@ -12,31 +12,28 @@ var _db = require('../lib/db');
 
 var _db2 = _interopRequireDefault(_db);
 
-var _redis = require('../lib/redis');
-
-var _redis2 = _interopRequireDefault(_redis);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-var redisClient = new _redis2.default({ expire: 3600 });
-
 exports.default = function (_ref) {
   var config = _ref.config,
-      db = _ref.db;
+      db = _ref.db,
+      mysql = _ref.mysql,
+      redisClient = _ref.redisClient;
 
   var api = (0, _express.Router)();
-  var database = new _db2.default({ config: config, db: db });
+  var database = new _db2.default({ config: config, db: db, mysql: mysql });
 
   api.get('/list', function () {
     var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(req, res) {
-      var token, user, userId, result;
+      var _req$query, token, field, value, sort, user, userId, result, sortField, sortValue;
+
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              token = req.query.token;
+              _req$query = req.query, token = _req$query.token, field = _req$query.field, value = _req$query.value, sort = _req$query.sort;
 
               if (token) {
                 _context.next = 3;
@@ -54,51 +51,70 @@ exports.default = function (_ref) {
               user = _context.sent;
 
               if (!user) {
-                _context.next = 19;
+                _context.next = 28;
                 break;
               }
 
               userId = user.id;
-              _context.next = 11;
-              return database.getTasks({ userId: userId });
+              result = void 0;
+              sortField = sort.split(':')[0];
+              sortValue = sort.split(':')[1];
 
-            case 11:
+              if (!(field && value)) {
+                _context.next = 18;
+                break;
+              }
+
+              _context.next = 15;
+              return database.getTasks({ value: value, field: field, sortField: sortField, sortValue: sortValue });
+
+            case 15:
+              result = _context.sent;
+              _context.next = 21;
+              break;
+
+            case 18:
+              _context.next = 20;
+              return database.getTasks({ value: userId, sortField: sortField, sortValue: sortValue });
+
+            case 20:
               result = _context.sent;
 
+            case 21:
               if (!(result && result.code === 200)) {
-                _context.next = 16;
+                _context.next = 25;
                 break;
               }
 
               return _context.abrupt('return', res.send(result).status(result.code));
 
-            case 16:
+            case 25:
               return _context.abrupt('return', res.send(result).status(404));
 
-            case 17:
-              _context.next = 20;
+            case 26:
+              _context.next = 29;
               break;
 
-            case 19:
+            case 28:
               return _context.abrupt('return', res.send({ result: 'User is not authorized', code: 401 }).status(401));
 
-            case 20:
-              _context.next = 26;
+            case 29:
+              _context.next = 35;
               break;
 
-            case 22:
-              _context.prev = 22;
+            case 31:
+              _context.prev = 31;
               _context.t0 = _context['catch'](3);
 
               console.error(_context.t0);
               return _context.abrupt('return', res.send({ result: 'Internal error', code: 500 }).status(500));
 
-            case 26:
+            case 35:
             case 'end':
               return _context.stop();
           }
         }
-      }, _callee, this, [[3, 22]]);
+      }, _callee, this, [[3, 31]]);
     }));
 
     return function (_x, _x2) {
@@ -136,7 +152,11 @@ exports.default = function (_ref) {
                 break;
               }
 
-              task = _extends({}, task, { author: user.id });
+              task = _extends({}, task, {
+                author: user.id,
+                createdAt: Date.now()
+              });
+
               _context2.next = 12;
               return database.addTask({ task: task });
 
@@ -171,7 +191,7 @@ exports.default = function (_ref) {
     };
   }());
 
-  api.post('/deleteTask', function () {
+  api.delete('/deleteTask', function () {
     var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(req, res) {
       var token, id, user, result;
       return regeneratorRuntime.wrap(function _callee3$(_context3) {
@@ -235,67 +255,203 @@ exports.default = function (_ref) {
     };
   }());
 
-  api.put('/updateTask', function () {
+  api.delete('/deleteByProjectId', function () {
     var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(req, res) {
-      var token, task, user, result;
+      var _req$query2, token, projectId, user, tasksList, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, task, result;
+
       return regeneratorRuntime.wrap(function _callee4$(_context4) {
         while (1) {
           switch (_context4.prev = _context4.next) {
             case 0:
-              token = req.query.token;
-              task = req.body;
+              _req$query2 = req.query, token = _req$query2.token, projectId = _req$query2.projectId;
 
-              if (!(!token || !task)) {
-                _context4.next = 4;
+              if (!(!token || !projectId)) {
+                _context4.next = 3;
                 break;
               }
 
               return _context4.abrupt('return', res.send({ result: 'Missing required fields', code: 500 }).status(500));
 
-            case 4:
-              _context4.prev = 4;
-              _context4.next = 7;
+            case 3:
+              _context4.prev = 3;
+              _context4.next = 6;
               return redisClient.get(token);
 
-            case 7:
+            case 6:
               user = _context4.sent;
 
               if (!user) {
-                _context4.next = 15;
+                _context4.next = 45;
                 break;
               }
 
-              _context4.next = 11;
-              return database.updateTask({ task: task });
+              _context4.next = 10;
+              return database.getTasks({ value: projectId, field: 'project.id' });
 
-            case 11:
+            case 10:
+              tasksList = _context4.sent;
+
+              if (!(tasksList.code === 200 && tasksList.result.length)) {
+                _context4.next = 42;
+                break;
+              }
+
+              _iteratorNormalCompletion = true;
+              _didIteratorError = false;
+              _iteratorError = undefined;
+              _context4.prev = 15;
+              _iterator = tasksList.result[Symbol.iterator]();
+
+            case 17:
+              if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                _context4.next = 25;
+                break;
+              }
+
+              task = _step.value;
+              _context4.next = 21;
+              return database.deleteTask({ id: task.id });
+
+            case 21:
               result = _context4.sent;
-              return _context4.abrupt('return', res.send(result).status(result.code));
-
-            case 15:
-              return _context4.abrupt('return', res.send({ result: 'User is not authorized', code: 401 }).status(401));
-
-            case 16:
-              _context4.next = 22;
-              break;
-
-            case 18:
-              _context4.prev = 18;
-              _context4.t0 = _context4['catch'](4);
-
-              console.error(_context4.t0);
-              return _context4.abrupt('return', res.send({ result: 'Internal error', code: 500 }).status(500));
 
             case 22:
+              _iteratorNormalCompletion = true;
+              _context4.next = 17;
+              break;
+
+            case 25:
+              _context4.next = 31;
+              break;
+
+            case 27:
+              _context4.prev = 27;
+              _context4.t0 = _context4['catch'](15);
+              _didIteratorError = true;
+              _iteratorError = _context4.t0;
+
+            case 31:
+              _context4.prev = 31;
+              _context4.prev = 32;
+
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+
+            case 34:
+              _context4.prev = 34;
+
+              if (!_didIteratorError) {
+                _context4.next = 37;
+                break;
+              }
+
+              throw _iteratorError;
+
+            case 37:
+              return _context4.finish(34);
+
+            case 38:
+              return _context4.finish(31);
+
+            case 39:
+              return _context4.abrupt('return', res.send({ result: 'OK', code: 200 }).status(200));
+
+            case 42:
+              return _context4.abrupt('return', res.send({ result: 'User doesn\'t have a tasks with project id ' + projectId, code: 404 }).status(404));
+
+            case 43:
+              _context4.next = 46;
+              break;
+
+            case 45:
+              return _context4.abrupt('return', res.send({ result: 'User is not authorized', code: 401 }).status(401));
+
+            case 46:
+              _context4.next = 52;
+              break;
+
+            case 48:
+              _context4.prev = 48;
+              _context4.t1 = _context4['catch'](3);
+
+              console.error(_context4.t1);
+              return _context4.abrupt('return', res.send({ result: 'Internal error', code: 500 }).status(500));
+
+            case 52:
             case 'end':
               return _context4.stop();
           }
         }
-      }, _callee4, this, [[4, 18]]);
+      }, _callee4, this, [[3, 48], [15, 27, 31, 39], [32,, 34, 38]]);
     }));
 
     return function (_x7, _x8) {
       return _ref5.apply(this, arguments);
+    };
+  }());
+
+  api.put('/updateTask', function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(req, res) {
+      var token, task, user, result;
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              token = req.query.token;
+              task = req.body;
+
+              if (!(!token || !task)) {
+                _context5.next = 4;
+                break;
+              }
+
+              return _context5.abrupt('return', res.send({ result: 'Missing required fields', code: 500 }).status(500));
+
+            case 4:
+              _context5.prev = 4;
+              _context5.next = 7;
+              return redisClient.get(token);
+
+            case 7:
+              user = _context5.sent;
+
+              if (!user) {
+                _context5.next = 15;
+                break;
+              }
+
+              _context5.next = 11;
+              return database.updateTask({ task: task });
+
+            case 11:
+              result = _context5.sent;
+              return _context5.abrupt('return', res.send(result).status(result.code));
+
+            case 15:
+              return _context5.abrupt('return', res.send({ result: 'User is not authorized', code: 401 }).status(401));
+
+            case 16:
+              _context5.next = 22;
+              break;
+
+            case 18:
+              _context5.prev = 18;
+              _context5.t0 = _context5['catch'](4);
+
+              console.error(_context5.t0);
+              return _context5.abrupt('return', res.send({ result: 'Internal error', code: 500 }).status(500));
+
+            case 22:
+            case 'end':
+              return _context5.stop();
+          }
+        }
+      }, _callee5, this, [[4, 18]]);
+    }));
+
+    return function (_x9, _x10) {
+      return _ref6.apply(this, arguments);
     };
   }());
 
