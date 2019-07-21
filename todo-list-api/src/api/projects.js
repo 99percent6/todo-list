@@ -1,10 +1,7 @@
 import { Router } from 'express';
 import Database from '../lib/db';
-import Redis from '../lib/redis';
 
-const redisClient = new Redis({ expire: 3600 });
-
-export default ({ config, db, mysql }) => {
+export default ({ config, db, mysql, redisClient }) => {
   const api = Router();
   const database = new Database({ config, db, mysql });
 

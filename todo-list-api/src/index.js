@@ -5,9 +5,11 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import api from './api';
 import { db, connection } from './db';
+import Redis from './lib/redis';
 import config from '../config/config.json';
 
 connection.connect();
+const redisClient = new Redis({ expire: 3600 });
 
 const app = express();
 const port = 8080;
@@ -27,7 +29,7 @@ app.get('/', (request, response) => {
   response.send('Hello from Express!');
 });
 
-app.use('/api', api({ config, db, mysql }));
+app.use('/api', api({ config, db, mysql, redisClient }));
 
 app.listen(port, (err) => {
   if (err) {
