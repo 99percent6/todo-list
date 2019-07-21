@@ -50,7 +50,7 @@ async function migrateTasks () {
       if (!task.priority) {
         task.priority = null;
       }
-
+      delete task.id;
       const command = 'INSERT INTO tasks SET ?'
       connection.query(command, task, function (error, results, fields) {
         if (error) {

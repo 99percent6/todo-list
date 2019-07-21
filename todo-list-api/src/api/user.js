@@ -1,13 +1,11 @@
 import { Router } from 'express';
 import Database from '../lib/db';
-import Redis from '../lib/redis';
 import TokenGenerator from 'uuid-token-generator';
 import { isValidRegistrationData, isValidEmail } from '../helpers/user';
 
-const redisClient = new Redis({ expire: 3600 });
 const tokgen = new TokenGenerator(256, TokenGenerator.BASE58);
 
-export default ({ config, db, mysql }) => {
+export default ({ config, db, mysql, redisClient }) => {
   const api = Router();
   const database = new Database({ config, db, mysql });
 
