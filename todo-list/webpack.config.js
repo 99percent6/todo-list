@@ -6,6 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const WorkboxPlugin = require('workbox-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const autoprefixer = require('autoprefixer');
+const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 
 module.exports = {
   entry: "./src/index.js",
@@ -105,7 +106,17 @@ module.exports = {
     new WorkboxPlugin.GenerateSW({
       clientsClaim: true,
       skipWaiting: true
-    })
+    }),
+    new SWPrecacheWebpackPlugin(
+      {
+        cacheId: 'the-tasker',
+        filename: 'service-worker.js',
+        staticFileGlobs: [
+          'dist/**.*'
+        ],
+        staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
+      }
+    )
   ],
   optimization: {
     minimizer: [
