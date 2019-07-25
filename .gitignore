@@ -24,6 +24,7 @@ todo-list/npm-debug.log*
 todo-list/yarn-debug.log*
 todo-list/yarn-error.log*
 todo-list/dist
+todo-list/build
 
 todo-list-api/npm-debug.log*
 todo-list-api/yarn-debug.log*
