@@ -3,8 +3,7 @@ const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require('copy-webpack-plugin');
-// const WorkboxPlugin = require('workbox-webpack-plugin');
-const { InjectManifest } = require('workbox-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 // const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
@@ -104,26 +103,20 @@ module.exports = {
     new CopyPlugin([
       { from: 'src/public', to: path.join(__dirname, "/dist") }
     ]),
-    new InjectManifest({
-      swSrc: './src/serviceWorker.js',
-      importWorkboxFrom: 'cdn',
-      exclude: [/\.map$/, /asset-manifest\.json$/],
+    new WorkboxPlugin.GenerateSW({
       globPatterns: ['**/*.{html,js,css}'],
+      clientsClaim: true,
+      exclude: [/\.map$/, /asset-manifest\.json$/],
+      importWorkboxFrom: 'cdn',
+      navigateFallback: '/index.html',
+      navigateFallbackBlacklist: [
+        // Exclude URLs starting with /_, as they're likely an API call
+        new RegExp('^/_'),
+        // Exclude URLs containing a dot, as they're likely a resource in
+        // public/ and not a SPA route
+        new RegExp('/[^/]+\\.[^/]+$'),
+      ],
     })
-    // new WorkboxPlugin.GenerateSW({
-    //   globPatterns: ['**/*.{html,js,css}'],
-    //   clientsClaim: true,
-    //   exclude: [/\.map$/, /asset-manifest\.json$/],
-    //   importWorkboxFrom: 'cdn',
-    //   navigateFallback: '/index.html',
-    //   navigateFallbackBlacklist: [
-    //     // Exclude URLs starting with /_, as they're likely an API call
-    //     new RegExp('^/_'),
-    //     // Exclude URLs containing a dot, as they're likely a resource in
-    //     // public/ and not a SPA route
-    //     new RegExp('/[^/]+\\.[^/]+$'),
-    //   ],
-    // })
   ],
   optimization: {
     minimizer: [
