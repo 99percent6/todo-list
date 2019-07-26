@@ -101,7 +101,7 @@ class Item extends Component {
 
   renderContent = () => {
     const { priorityList } = this.state;
-    const { classes, task, changedState } = this.props;
+    const { classes, task, openDialog } = this.props;
     const isActiveState = task.state === 'active';
     const iconColor = isActiveState ? 'action' : 'disabled';
     const secondaryText = this.buildSecondaryTaskText(task);
@@ -134,7 +134,7 @@ class Item extends Component {
               primary: isActiveState ? classes.itemContentActive : classes.itemContentDisabled,
             }}
             primary={task.text}
-            onClick={() => changedState(task)}
+            onClick={openDialog}
             secondary={secondaryText}
           />
         </div>
@@ -143,7 +143,7 @@ class Item extends Component {
   }
 
   render() {
-    const { task, classes, closeDialog, applyChanges, isVisibleDialog } = this.props;
+    const { task, classes, closeDialog, applyChanges, isVisibleDialog, changedState } = this.props;
 
     return (
       <div>
@@ -151,7 +151,13 @@ class Item extends Component {
           {this.renderContent()}
           {this.renderIconGroup(task)}
         </ListItem>
-        <DialogEditOptions open={isVisibleDialog} onCloseDialog={closeDialog} task={task} onSaveTask={() => applyChanges(task)}/>
+        <DialogEditOptions
+          open={isVisibleDialog}
+          onCloseDialog={closeDialog}
+          task={task}
+          onSaveTask={() => applyChanges(task)}
+          onChangedState={() => changedState(task)}
+        />
       </div>
     );
   };
