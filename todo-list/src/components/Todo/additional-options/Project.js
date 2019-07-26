@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../../core/actions';
 import { projectsSelector } from '../../../core/selectors';
+import { withRouter } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -30,6 +31,19 @@ const styles = theme => ({
 });
 
 class SelectProject extends Component {
+  componentDidUpdate(prevProps) {
+    const { projectList, match } = this.props;
+    if (match.params.project && (projectList.length !== prevProps.projectList.length || match.params.project !== prevProps.match.params.project)) {
+      this.setProject(match.params.project);
+    }
+  }
+
+  setProject = (value) => {
+    const { updProjectTask, projectList } = this.props;
+    const project = value === 'all' ? '' : projectList.find(itm => itm.slug === value);
+    updProjectTask({ project: project });
+  };
+
   renderMenuItem = () => {
     const { projectList } = this.props;
     return projectList.filter(item => item.slug !== 'all').map(item => {
@@ -42,8 +56,7 @@ class SelectProject extends Component {
   };
 
   handleChange = event => {
-    const { updProjectTask } = this.props;
-    updProjectTask({ project: event.target.value });
+    this.setProject(event.target.value.slug);
   };
 
   render() {
@@ -68,4 +81,4 @@ class SelectProject extends Component {
   };
 }
 
-export default connect(mapStateToProps, actionCreators)(withStyles(styles)(SelectProject));
+export default withRouter(connect(mapStateToProps, actionCreators)(withStyles(styles)(SelectProject)));
