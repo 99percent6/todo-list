@@ -13,6 +13,7 @@ import Sidebar from './components/Sidebar/Sidebar';
 import { getCookie } from './core/lib/cookies';
 import * as actions from './core/actions';
 import config from './config/config.json';
+import './css/vendor/flexboxgrid.css';
 
 const mapStateToProps = (state) => {
   const { current, token } = state.user;

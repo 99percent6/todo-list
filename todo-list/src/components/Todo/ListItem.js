@@ -78,6 +78,10 @@ class Item extends Component {
         label: 'Проект: ',
         value: task.project && task.project.name ? task.project.name : null,
       },
+      {
+        label: 'Описание: ',
+        value: task.description
+      }
     ];
 
     return secondaryData.map(item => {

@@ -14,6 +14,7 @@ export function withEditTask(WrappedComponent) {
       textValue: addTask.editValue,
       executionDate: addTask.executionDate,
       project: addTask.project,
+      description: addTask.description
     };
     return props;
   }
@@ -23,7 +24,8 @@ export function withEditTask(WrappedComponent) {
     asyncUpdateTask: actions.asyncUpdateTask,
     updPriorityTask: actions.updPriorityTask,
     updPeriodOfExecution: actions.updPeriodOfExecution,
-    updProjectTask: actions.updProjectTask,
+    updEditProjectTask: actions.updEditProjectTask,
+    updTaskDescription: actions.updTaskDescription,
     setNotification: actions.setNotification,
     asyncDeleteTask: actions.asyncDeleteTask,
   };
@@ -54,20 +56,22 @@ export function withEditTask(WrappedComponent) {
     };
 
     openDialog = () => {
-      const { updEditValue, updPriorityTask, updPeriodOfExecution, updProjectTask, task } = this.props;
+      const { updEditValue, updPriorityTask, updPeriodOfExecution, updEditProjectTask, updTaskDescription, task } = this.props;
       updEditValue({ text: task.text });
-      updPriorityTask({ priority: task.priority ? task.priority : '' });
+      updPriorityTask({ priority: task.priority || '' });
       updPeriodOfExecution({ executionDate: task.executionDate ? task.executionDate : null });
-      updProjectTask({ project: task.project ? task.project : '' });
+      updEditProjectTask({ project: task.project || '' });
+      updTaskDescription({ description: task.description || '' })
       this.setState({ isVisibleDialog: true });
     };
   
     closeDialog = () => {
-      const { updEditValue, updPriorityTask, updPeriodOfExecution, updProjectTask } = this.props;
+      const { updEditValue, updPriorityTask, updPeriodOfExecution, updEditProjectTask, updTaskDescription } = this.props;
       updEditValue({ text: '' });
       updPriorityTask({ priority:  '' });
       updPeriodOfExecution({ executionDate: null });
-      updProjectTask({ project: '' });
+      updEditProjectTask({ project: '' });
+      updTaskDescription({ description: '' });
       this.setState({ isVisibleDialog: false });
     };
   
@@ -79,12 +83,12 @@ export function withEditTask(WrappedComponent) {
     };
   
     applyChanges = (task) => {
-      const { textValue, setNotification, asyncUpdateTask, token, syncTasks, priority, executionDate, project } = this.props;
+      const { textValue, setNotification, asyncUpdateTask, token, syncTasks, priority, executionDate, project, description } = this.props;
       if (!textValue || textValue === '') {
         setNotification({ open: true, message: 'Введите название задачи', type: 'error' });
         return;
       }
-      task = { ...task, text: textValue, priority, executionDate, project };
+      task = { ...task, text: textValue, priority, executionDate, project, description };
       asyncUpdateTask({task}).then(res => {
         if (token) {
           syncTasks();
