@@ -9,20 +9,15 @@
 .options-container {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 
-  @media (max-width: 414px) {
+  @media (max-width: 767px) {
     flex-direction: column;
   }
 }
 
 .additional-options {
-  flex-basis: 35%;
   margin-top: 10px;
-  margin-right: 20px;
-
-  @media (max-width: 414px) {
-    flex-basis: 100%;
-  }
 }
 
 .matrix-container {

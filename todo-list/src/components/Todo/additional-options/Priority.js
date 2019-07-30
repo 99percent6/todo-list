@@ -88,7 +88,7 @@ class Priority extends Component {
     const { classes, priority } = this.props;
 
     return (
-      <div className="additional-options">
+      <div className="additional-options col-xs-12 col-sm-6 col-md-4">
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="priority">Приоритет</InputLabel>
           <Select

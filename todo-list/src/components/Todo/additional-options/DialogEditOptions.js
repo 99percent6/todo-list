@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as actions from '../../../core/actions';
 import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -9,7 +11,20 @@ import Priority from './Priority';
 import TaskLabelEdit from './TaskLabelEdit';
 import PeriodOfExecution from './PeriodOfExecution';
 import Project from './Project';
+import TaskDescription from './Description';
 import '../../../css/components/todoList/base.scss';
+
+const mapStateToProps = (state) => {
+  const { addTask } = state;
+  const props = {
+    project: addTask.editProject,
+  };
+  return props;
+};
+
+const actionCreators = {
+  updEditProjectTask: actions.updEditProjectTask,
+};
 
 const styles = theme => ({
   paperFullWidth: {
@@ -35,7 +50,7 @@ class DialogEditOptions extends Component {
   };
 
   render() {
-    const { maxWidth, fullWidth, open, onCloseDialog, onSaveTask, task, classes, onChangedState } = this.props;
+    const { maxWidth, fullWidth, open, onCloseDialog, onSaveTask, task, classes, onChangedState, updEditProjectTask, project } = this.props;
 
     return (
       <React.Fragment>
@@ -52,10 +67,11 @@ class DialogEditOptions extends Component {
           <DialogTitle id="max-width-dialog-title" className={classes.title}>{ task.text }</DialogTitle>
           <DialogContent>
             <TaskLabelEdit/>
-            <div className="options-container">
+            <div className="options-container row between-xs">
               <Priority/>
               <PeriodOfExecution/>
-              <Project/>
+              <Project project={project} updProjectTask={updEditProjectTask}/>
+              <TaskDescription/>
             </div>
           </DialogContent>
           <DialogActions classes={{root: classes.dialogActionsRoot}}>
@@ -79,4 +95,4 @@ class DialogEditOptions extends Component {
   }
 }
 
-export default withStyles(styles)(DialogEditOptions);
+export default connect(mapStateToProps, actionCreators)(withStyles(styles)(DialogEditOptions));

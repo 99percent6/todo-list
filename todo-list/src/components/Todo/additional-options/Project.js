@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as actions from '../../../core/actions';
+// import * as actions from '../../../core/actions';
 import { projectsSelector } from '../../../core/selectors';
 import { withRouter } from "react-router-dom";
 import { withStyles } from '@material-ui/core/styles';
@@ -12,17 +12,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import '../../../css/components/todoList/base.scss';
 
 const mapStateToProps = (state) => {
-  const { addTask } = state;
   const props = {
-    project: addTask.project,
     projectList: projectsSelector(state),
   };
   return props;
 };
 
-const actionCreators = {
-  updProjectTask: actions.updProjectTask,
-};
+const actionCreators = {};
 
 const styles = theme => ({
   formControl: {
@@ -36,12 +32,12 @@ class SelectProject extends Component {
     if (match.params.project && (projectList.length !== prevProps.projectList.length || match.params.project !== prevProps.match.params.project)) {
       this.setProject(match.params.project);
     }
-  }
+  };
 
   setProject = (value) => {
     const { updProjectTask, projectList } = this.props;
     const project = value === 'all' ? '' : projectList.find(itm => itm.slug === value);
-    updProjectTask({ project: project });
+    updProjectTask({ project });
   };
 
   renderMenuItem = () => {
@@ -51,8 +47,8 @@ class SelectProject extends Component {
         <MenuItem key={item.id} value={item}>
           {item.name}
         </MenuItem>
-      )
-    })
+      );
+    });
   };
 
   handleChange = event => {
@@ -63,7 +59,7 @@ class SelectProject extends Component {
     const { classes, project } = this.props;
 
     return (
-      <div className="additional-options">
+      <div className="additional-options col-xs-12 col-sm-6 col-md-4">
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="project">Проект</InputLabel>
           <Select

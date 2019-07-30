@@ -17,6 +17,7 @@ const mapStateToProps = (state) => {
     priority: addTask.priority,
     executionDate: addTask.executionDate,
     project: addTask.project,
+    description: addTask.description,
     token: user.token,
   };
   return props;
@@ -53,7 +54,7 @@ class AddTask extends Component {
 
   addTask = (e) => {
     e.preventDefault();
-    const { textValue, priority, executionDate, project, asyncAddTask, syncTasks, token } = this.props;
+    const { textValue, priority, executionDate, project, description, asyncAddTask, syncTasks, token } = this.props;
     if (!textValue || textValue.trim() === '') return;
     const task = {
       id: uniqueId(),
@@ -62,6 +63,7 @@ class AddTask extends Component {
       priority,
       executionDate,
       project,
+      description,
     };
     asyncAddTask({ task, token }).then(res => {
       if (token) {

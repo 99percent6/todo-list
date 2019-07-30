@@ -51,24 +51,26 @@ class PeriodOfExecution extends Component {
     const { executionDate } = this.props;
 
     return (
-      <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-        <Grid container className="additional-options" justify="flex-start">
-          <ThemeProvider theme={materialTheme}>
-            <DateTimePicker
-              clearable
-              label="Срок исполнения"
-              inputVariant="standard"
-              invalidDateMessage="Неверный формат даты"
-              cancelLabel="Закрыть"
-              clearLabel="Очистить"
-              ampm={false}
-              value={executionDate}
-              onChange={this.handleDateChange}
-              format="dd MMMM yyyy HH:mm"
-            />
-          </ThemeProvider>
-        </Grid>
-      </MuiPickersUtilsProvider>
+      <div className="col-xs-12 col-sm-6 col-md-4">
+        <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
+          <Grid container className="additional-options" justify="flex-start">
+            <ThemeProvider theme={materialTheme}>
+              <DateTimePicker
+                clearable
+                label="Срок исполнения"
+                inputVariant="standard"
+                invalidDateMessage="Неверный формат даты"
+                cancelLabel="Закрыть"
+                clearLabel="Очистить"
+                ampm={false}
+                value={executionDate}
+                onChange={this.handleDateChange}
+                format="dd MMMM yyyy HH:mm"
+              />
+            </ThemeProvider>
+          </Grid>
+        </MuiPickersUtilsProvider>
+      </div>
     );
   };
 }

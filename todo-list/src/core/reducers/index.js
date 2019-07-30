@@ -22,7 +22,7 @@ const addTask = handleActions({
       value: '',
       priority: '',
       executionDate: null,
-      project: '',
+      description: ''
     };
   },
   [actions.updPriorityTask](state, { payload: { priority } }) {
@@ -43,7 +43,19 @@ const addTask = handleActions({
       project,
     };
   },
-}, { value: '', editValue: '', priority: '', executionDate: null, project: '' });
+  [actions.updEditProjectTask](state, { payload: { project } }) {
+    return {
+      ...state,
+      editProject: project,
+    };
+  },
+  [actions.updTaskDescription](state, { payload: { description } }) {
+    return {
+      ...state,
+      description,
+    };
+  }
+}, { value: '', editValue: '', priority: '', executionDate: null, project: '', editProject: '', description: '' });
 
 const tasks = handleActions({
   [actions.addTask](state, { payload: { task } }) {
