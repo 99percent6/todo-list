@@ -272,8 +272,9 @@ export default class db {
       const result = await this.esSearchByQuery({
         query,
         entityType: 'task',
-        sort: `${sortField}:${sortValue}`
-      })
+        sort: `${sortField}:${sortValue}`,
+        size: 200
+      });
 
       return result;
     } catch (error) {
