@@ -18,7 +18,7 @@ const actionCreators = {
 
 const styles = theme => ({
   textField: {
-    marginTop: '10px',
+    marginTop: '0',
   },
 });
 
@@ -33,7 +33,7 @@ class TaskDescription extends Component {
     const { taskDescription, classes } = this.props;
 
     return (
-      <div className="col-xs-12 col-sm-6 col-md-4">
+      <div className="additional-options col-xs-12 col-sm-6 col-md-4">
         <TextField
           id="standard-multiline-flexible"
           label="Описание"
