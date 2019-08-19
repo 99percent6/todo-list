@@ -51,9 +51,9 @@ class PeriodOfExecution extends Component {
     const { executionDate } = this.props;
 
     return (
-      <div className="col-xs-12 col-sm-6 col-md-4">
+      <div className="additional-options col-xs-12 col-sm-6 col-md-4">
         <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-          <Grid container className="additional-options" justify="flex-start">
+          <Grid container justify="flex-start">
             <ThemeProvider theme={materialTheme}>
               <DateTimePicker
                 clearable

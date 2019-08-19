@@ -48,7 +48,7 @@ class AddTaskAdditionalOpts extends Component {
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <Typography className={classes.heading} variant="caption">Дополнительно</Typography>
           </ExpansionPanelSummary>
-          <ExpansionPanelDetails className="row options-container between-xs">
+          <ExpansionPanelDetails className="options-container between-xs">
             <Priority/>
             <PeriodOfExecution/>
             <Project project={project} updProjectTask={updProjectTask}/>
