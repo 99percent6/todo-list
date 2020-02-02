@@ -80,7 +80,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "browserconfig.xml"
   },
   {
-    "url": "css/main.422e865b2272d881d52d.css"
+    "url": "css/main.2eab7feba66456496d1b.css"
   },
   {
     "revision": "19d8ddb18ff60fa51a312d8f1d8fb7ae",
@@ -103,11 +103,11 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "favicon.png"
   },
   {
-    "revision": "f2bdabcc3137f29917cdf2e8383def87",
+    "revision": "f26b0e1e90c51d0108c7323ea342bc1f",
     "url": "index.html"
   },
   {
-    "url": "js/app.422e865b2272d881d52d.js"
+    "url": "js/app.2eab7feba66456496d1b.js"
   },
   {
     "revision": "1b700a666f553309b912e619585780e2",
